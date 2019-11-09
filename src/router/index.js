@@ -49,8 +49,8 @@ export const constantRouterMap = [
   {
     path: '/404',
     component: () => import('@/views/errorPage/404'),
-    hidden: true,
-    //redirect: '401',
+    hidden: true
+    // redirect: '401',
   },
   {
     path: '/401',
@@ -79,6 +79,41 @@ export default new Router({
 })
 
 export const asyncRouterMap = [
+
+  {
+    path: '/target',
+    component: Layout,
+    redirect: 'noredirect',
+    alwaysShow: true,
+    name: 'targetManage',
+    meta: {
+      title: '布控管理',
+      icon: 'chart'
+    },
+    children: [
+      {
+        path: 'targetNum',
+        component: () => import('@/views/target/targetNum'),
+        name: 'targetNum',
+        meta: {
+          title: '布控号码',
+          noCache: true
+        }
+      },
+      {
+        path: 'brand',
+        component: () => import('@/views/mall/brand'),
+        name: 'brand',
+        meta: {
+          perms: ['GET /admin/brand/list', 'POST /admin/brand/create', 'GET /admin/brand/read', 'POST /admin/brand/update', 'POST /admin/brand/delete'],
+          title: '布控人脸',
+          noCache: true
+        }
+      }
+
+    ]
+  },
+
   {
     path: '/mall',
     component: Layout,
@@ -206,10 +241,6 @@ export const asyncRouterMap = [
     ]
   },
 
- 
-
-
- 
   {
     path: '/profile',
     component: Layout,
