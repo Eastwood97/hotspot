@@ -129,7 +129,7 @@ export const asyncRouterMap = [
         component: () => import('@/views/video/live'),
         name: 'region',
         meta: {
-          perms: ['POST /admin/video/live'],
+          perms: ['GET /admin/video/live'],
           title: '视频直播',
           noCache: true
         }

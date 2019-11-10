@@ -60,6 +60,7 @@
 </style>
 
 <script>
+import { listRTSPUrl } from '@/api/videore'
 import { getToken } from '@/utils/auth'
 import 'video.js/dist/video-js.css'
 import 'videojs-flash'
@@ -142,9 +143,25 @@ export default {
     }
   },
   created() {
+    this.getList()
+  },
+  mounted() {
   },
   methods: {
-
+    getList() {
+      this.listLoading = true
+      listRTSPUrl()
+        .then(response => {
+          this.list = response.data.data.list
+          this.total = response.data.data.total
+          this.listLoading = false
+        })
+        .catch(() => {
+          this.list = []
+          this.total = 0
+          this.listLoading = false
+        })
+    }
   }
 }
 </script>
