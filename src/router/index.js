@@ -113,7 +113,39 @@ export const asyncRouterMap = [
 
     ]
   },
-
+  {
+    path: '/video',
+    component: Layout,
+    redirect: 'noredirect',
+    alwaysShow: true,
+    name: 'videoManage',
+    meta: {
+      title: '视频广场',
+      icon: 'chart'
+    },
+    children: [
+      {
+        path: 'region',
+        component: () => import('@/views/video/live'),
+        name: 'region',
+        meta: {
+          perms: ['POST /admin/video/live'],
+          title: '视频直播',
+          noCache: true
+        }
+      },
+      {
+        path: 'brand',
+        component: () => import('@/views/video/record'),
+        name: 'brand',
+        meta: {
+          perms: ['POST /admin/video/record/list', 'GET /admin/video/record/delete', 'POST /admin/video/record/search'],
+          title: '视频录播',
+          noCache: true
+        }
+      }
+    ]
+  },
   {
     path: '/mall',
     component: Layout,
