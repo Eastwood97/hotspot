@@ -149,17 +149,14 @@ export default {
   },
   methods: {
     getList() {
-      this.listLoading = true
       listRTSPUrl()
         .then(response => {
           this.list = response.data.data.list
           this.total = response.data.data.total
-          this.listLoading = false
         })
         .catch(() => {
           this.list = []
           this.total = 0
-          this.listLoading = false
         })
     }
   }
