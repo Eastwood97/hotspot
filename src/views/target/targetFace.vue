@@ -10,12 +10,7 @@
         placeholder="请输入目标名称"
       />
       <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">查找</el-button>
-      <el-button
-        class="filter-item"
-        type="primary"
-        icon="el-icon-search"
-        @click="showAdvanceSearchView"
-      >高级搜索</el-button>
+
       <el-button class="filter-item" type="primary" icon="el-icon-edit" @click="handleCreate">添加</el-button>
       <el-button
         :loading="downloadLoading"
@@ -26,49 +21,11 @@
       >导出</el-button>
     </div>
 
-    <!--高级搜索框-->
-    <div
-      v-show="advanceSearchViewVisible"
-      style="margin-bottom: 10px;border: 1px;border-radius: 5px;border-style: solid;padding: 5px 0px 5px 0px;box-sizing:border-box;border-color: #20a0ff"
-    >
-      <el-row>
-        <el-col :span="5">
-          IMSI:
-          <el-input
-            v-model="listQuery.imsi"
-            style="width: 130px"
-            size="mini"
-            placeholder="请输入IMSI"
-          />
-        </el-col>
-        <el-col :span="5">
-          IMEI:
-          <el-input
-            v-model="listQuery.imei"
-            style="width: 130px"
-            size="mini"
-            placeholder="请输入IMEI"
-          />
-        </el-col>
-
-        <el-col :span="5">
-          电话号码:
-          <el-input v-model="listQuery.isdn" style="width: 130px" size="mini" placeholder="请输入名称" />
-        </el-col>
-
-        <el-col :span="4" :offset="0">
-          <el-button size="mini" @click="cancelSearch">取消</el-button>
-          <el-button icon="el-icon-search" type="primary" size="mini" @click="handleFilter">搜索</el-button>
-        </el-col>
-      </el-row>
-    </div>
-
     <!-- 查询结果 -->
     <el-table
       v-loading="listLoading"
       :data="list"
       element-loading-text="正在查询中。。。"
-
       border
       fit
       highlight-current-row
@@ -80,11 +37,7 @@
 
       <el-table-column align="center" label="目标名称" prop="targetName" />
 
-      <el-table-column align="center" label="imsi" prop="imsi" />
-
-      <el-table-column align="center" label="imei" prop="imei" />
-
-      <el-table-column align="center" label="号码" prop="isdn" />
+      <el-table-column align="center" label="目标外貌" prop="imsi" />
 
       <el-table-column align="center" min-width="150px" label="创建时间" prop="createTime" />
       <el-table-column align="center" min-width="150px" label="更新时间" prop="updateTime" />
@@ -95,13 +48,13 @@
       <el-table-column align="center" label="操作" width="200" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
-            v-permission="['POST /admin/targetNum/update']"
+            v-permission="['POST /admin/TargetFace/update']"
             type="primary"
             size="mini"
             @click="handleUpdate(scope.row)"
           >编辑</el-button>
           <el-button
-            v-permission="['POST /admin/targetNum/delete']"
+            v-permission="['POST /admin/TargetFace/delete']"
             type="danger"
             size="mini"
             @click="deleteNumber(scope.row)"
@@ -145,16 +98,40 @@
         <el-form-item label="目标名称" prop="targetName">
           <el-input v-model="dataForm.targetName" />
         </el-form-item>
-        <el-form-item label="imsi" prop="imsi">
-          <el-input v-model="dataForm.imsi" />
-        </el-form-item>
 
-        <el-form-item label="imei" prop="imei">
-          <el-input v-model="dataForm.imei" />
-        </el-form-item>
-
-        <el-form-item label="电话号码" prop="isdn">
-          <el-input v-model="dataForm.isdn" />
+        <el-form-item label="品牌商图片" prop="picUrl">
+          <el-upload
+            :auto-upload="false"
+            :limit= "3"
+            :before-upload="beforeAvatarUpload"
+            action="#"
+            list-type="picture-card"
+            accept=".jpg"
+          >
+            <i slot="default" class="el-icon-plus"/>
+            <div slot="file" slot-scope="{file}">
+              <img :src="file.url" class="el-upload-list__item-thumbnail" alt >
+              <span class="el-upload-list__item-actions">
+                <span class="el-upload-list__item-preview" @click="handlePictureCardPreview(file)">
+                  <i class="el-icon-zoom-in"/>
+                </span>
+                <span
+                  v-if="!disabled"
+                  class="el-upload-list__item-delete"
+                  @click="handleDownload(file)"
+                >
+                  <i class="el-icon-download"/>
+                </span>
+                <span
+                  v-if="!disabled"
+                  class="el-upload-list__item-delete"
+                  @click="handleRemove(file)"
+                >
+                  <i class="el-icon-delete"/>
+                </span>
+              </span>
+            </div>
+          </el-upload>
         </el-form-item>
 
         <el-form-item label="描述" prop="desc">
@@ -198,19 +175,19 @@
 
 <script>
 import {
-  listTargetNum,
-  createTargetNum,
-  updateTargetNum,
-  deleteTargetNum
-} from '@/api/targetNum'
+  listTargetFace,
+  createTargetFace,
+  updateTargetFace,
+  deleteTargetFace
+} from '@/api/TargetFace'
 import { uploadPath } from '@/api/storage'
 import { getToken } from '@/utils/auth'
-import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 
 export default {
-
   data() {
     return {
+      imageUrl: '',
+      uploadPath,
       multipleSelection: [],
       advanceSearchViewVisible: false,
 
@@ -233,7 +210,8 @@ export default {
         imei: '',
         targetId: undefined,
         desc: '',
-        operatorId: ''
+        operatorId: '',
+        picUrl: ''
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -262,10 +240,9 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      listTargetNum(this.listQuery)
+      listTargetFace(this.listQuery)
         .then(response => {
           this.list = response.data.data.list
-          console.log(response.data.data.list)
           this.total = response.data.data.total
           this.listLoading = false
         })
@@ -317,7 +294,7 @@ export default {
     createData() {
       this.$refs['dataForm'].validate(valid => {
         if (valid) {
-          createTargetNum(this.dataForm)
+          createTargetFace(this.dataForm)
             .then(response => {
               this.list.unshift(response.data.data)
               this.dialogFormVisible = false
@@ -346,7 +323,7 @@ export default {
     updateData() {
       this.$refs['dataForm'].validate(valid => {
         if (valid) {
-          updateTargetNum(this.dataForm)
+          updateTargetFace(this.dataForm)
             .then(() => {
               for (const v of this.list) {
                 if (v.id === this.dataForm.id) {
@@ -370,25 +347,7 @@ export default {
         }
       })
     },
-    // handleDelete(row) {
-    //   deleteTargetNum(row)
-    //     .then(response => {
-    //       this.$notify.success({
-    //         title: "成功",
-    //         message: "删除成功"
-    //       });
-    //       const index = this.list.indexOf(row);
-    //       this.list.splice(index, 1);
-    //       this.getList();
-    //     })
-    //     .catch(response => {
-    //       this.$notify.error({
-    //         title: "失败",
-    //         message: response.data.errmsg
-    //       });
-    //     });
-    // },
-    // 导出
+
     handleDownload() {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
@@ -448,7 +407,7 @@ export default {
     doDelete(targetIds) {
       this.tableLoading = true
       var _this = this
-      deleteTargetNum(targetIds).then(resp => {
+      deleteTargetFace(targetIds).then(resp => {
         _this.tableLoading = false
         if (resp && resp.status == 200) {
           var data = resp.data
@@ -493,8 +452,30 @@ export default {
           this.doDelete(row.targetId)
         })
         .catch(() => {})
-    }
+    },
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === 'image/jpeg'
+      const isLt2M = file.size / 1024 / 1024 < 2
 
+      if (!isJPG) {
+        this.$message.error('上传头像图片只能是 JPG 格式!')
+      }
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 2MB!')
+      }
+      return isJPG && isLt2M
+    },
+    handleRemove(file) {
+      alert(1111)
+      console.log(file)
+    },
+    handlePictureCardPreview(file) {
+      this.dialogImageUrl = file.url
+      this.dialogVisible = true
+    },
+    handleDownload(file) {
+      console.log(file)
+    }
   }
 }
 </script>

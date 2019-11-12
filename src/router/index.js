@@ -101,9 +101,9 @@ export const asyncRouterMap = [
         }
       },
       {
-        path: 'brand',
-        component: () => import('@/views/mall/brand'),
-        name: 'brand',
+        path: 'targetFace',
+        component: () => import('@/views/target/targetFace'),
+        name: 'targetFace',
         meta: {
           perms: ['GET /admin/brand/list', 'POST /admin/brand/create', 'GET /admin/brand/read', 'POST /admin/brand/update', 'POST /admin/brand/delete'],
           title: '布控人脸',
@@ -146,6 +146,20 @@ export const asyncRouterMap = [
       }
     ]
   },
+  {
+    path: '/devmana',
+    component: Layout,
+    redirect: 'device',
+    children: [
+      {
+        path: 'device',
+        component: () => import('@/views/devmana/device'),
+        name: 'device',
+        meta: { title: '设备管理', icon: 'dashboard', noCache: true }
+      }
+    ]
+  },
+
   {
     path: '/mall',
     component: Layout,

@@ -3,11 +3,11 @@
     <!-- 查询和其他操作 -->
     <div class="filter-container">
       <el-input
-        v-model="listQuery.targetName"
+        v-model="listQuery.devNum"
         clearable
         class="filter-item"
         style="width: 200px;"
-        placeholder="请输入目标名称"
+        placeholder="请输入设备编号"
       />
       <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">查找</el-button>
       <el-button
@@ -33,27 +33,32 @@
     >
       <el-row>
         <el-col :span="5">
-          IMSI:
+          设备名称:
           <el-input
-            v-model="listQuery.imsi"
+            v-model="listQuery.devName"
             style="width: 130px"
             size="mini"
-            placeholder="请输入IMSI"
+            placeholder="请输入设备名称"
           />
         </el-col>
         <el-col :span="5">
-          IMEI:
+          设备类型:
           <el-input
-            v-model="listQuery.imei"
+            v-model="listQuery.devType"
             style="width: 130px"
             size="mini"
-            placeholder="请输入IMEI"
+            placeholder="请输入设备类型"
           />
         </el-col>
 
         <el-col :span="5">
-          电话号码:
-          <el-input v-model="listQuery.isdn" style="width: 130px" size="mini" placeholder="请输入名称" />
+          设备编号:
+          <el-input
+            v-model="listQuery.devNum"
+            style="width: 130px"
+            size="mini"
+            placeholder="请输入编号"
+          />
         </el-col>
 
         <el-col :span="4" :offset="0">
@@ -76,32 +81,34 @@
     >
       <el-table-column type="selection" width="55"/>
 
-      <el-table-column align="center" label="目标ID" prop="targetId" />
+      <el-table-column align="center" label="设备id" prop="devId" />
 
-      <el-table-column align="center" label="目标名称" prop="targetName" />
+      <el-table-column align="center" label="设备名称" prop="devName" />
 
-      <el-table-column align="center" label="imsi" prop="imsi" />
+      <el-table-column align="center" label="分组" prop="groupId" />
 
-      <el-table-column align="center" label="imei" prop="imei" />
+      <el-table-column align="center" label="类型" prop="devType" />
 
-      <el-table-column align="center" label="号码" prop="isdn" />
+      <el-table-column align="center" label="编号" prop="devNum" />
+
+      <el-table-column align="center" label="位置" prop="place" />
+
+      <el-table-column align="center" label="状态" prop="status" />
+
+      <el-table-column align="center" label="描述" prop="description" />
 
       <el-table-column align="center" min-width="150px" label="创建时间" prop="createTime" />
-      <el-table-column align="center" min-width="150px" label="更新时间" prop="updateTime" />
-      <el-table-column align="center" label="操作人ID" prop="operatorId" />
-
-      <el-table-column align="center" min-width="180px" label="描述" prop="desc" />
 
       <el-table-column align="center" label="操作" width="200" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
-            v-permission="['POST /admin/targetNum/update']"
+            v-permission="['POST /admin/device/update']"
             type="primary"
             size="mini"
             @click="handleUpdate(scope.row)"
           >编辑</el-button>
           <el-button
-            v-permission="['POST /admin/targetNum/delete']"
+            v-permission="['POST /admin/device/delete']"
             type="danger"
             size="mini"
             @click="deleteNumber(scope.row)"
@@ -142,23 +149,35 @@
         label-width="100px"
         style="width: 400px; margin-left:50px;"
       >
-        <el-form-item label="目标名称" prop="targetName">
-          <el-input v-model="dataForm.targetName" />
+        <el-form-item label="设备名称" prop="devName">
+          <el-input v-model="dataForm.devName" />
         </el-form-item>
-        <el-form-item label="imsi" prop="imsi">
-          <el-input v-model="dataForm.imsi" />
-        </el-form-item>
-
-        <el-form-item label="imei" prop="imei">
-          <el-input v-model="dataForm.imei" />
+        <el-form-item label="设备编号" prop="devNum">
+          <el-input v-model="dataForm.devNum" />
         </el-form-item>
 
-        <el-form-item label="电话号码" prop="isdn">
-          <el-input v-model="dataForm.isdn" />
+        <el-form-item label="设备类型" prop="devType">
+          <el-input v-model="dataForm.devType" />
         </el-form-item>
 
-        <el-form-item label="描述" prop="desc">
-          <el-input v-model="dataForm.desc" />
+        <el-form-item label="ip地址" prop="ipAddr">
+          <el-input v-model="dataForm.ipAddr" />
+        </el-form-item>
+
+        <el-form-item label="端口号" prop="port">
+          <el-input v-model="dataForm.port" />
+        </el-form-item>
+
+        <el-form-item label="分组" prop="groupId">
+          <el-input v-model="dataForm.groupId" />
+        </el-form-item>
+
+        <el-form-item label="ipv6地址" prop="ipv6Addr">
+          <el-input v-model="dataForm.ipv6Addr" />
+        </el-form-item>
+
+        <el-form-item label="描述" prop="description">
+          <el-input v-model="dataForm.description" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -197,18 +216,18 @@
 </style>
 
 <script>
+
 import {
-  listTargetNum,
-  createTargetNum,
-  updateTargetNum,
-  deleteTargetNum
-} from '@/api/targetNum'
+  listDevice,
+  createDevice,
+  updateDevice,
+  deleteDevice
+} from '@/api/device'
 import { uploadPath } from '@/api/storage'
 import { getToken } from '@/utils/auth'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 
 export default {
-
   data() {
     return {
       multipleSelection: [],
@@ -216,24 +235,24 @@ export default {
 
       list: [],
       total: 0,
-      listLoading: true,
+      listLoading: 'true',
       listQuery: {
         page: 1,
         limit: 20,
-        targetName: '',
-        imsi: '',
-        isdn: '',
-        imei: '',
-        id: undefined
+        devNum: '',
+        devType: '',
+        devName: ''
       },
       dataForm: {
-        targetName: '',
-        imsi: '',
-        isdn: '',
-        imei: '',
-        targetId: undefined,
-        desc: '',
-        operatorId: ''
+        devNum: '',
+        devName: '',
+        devType: '',
+        ipAddr: '',
+        ipv6Addr: '',
+        port: '',
+        description: '',
+        port: '',
+        groupId: undefined
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -242,8 +261,20 @@ export default {
         create: '创建'
       },
       rules: {
-        targetName: [
-          { required: true, message: '目标名称不能为空', trigger: 'blur' }
+        devNum: [
+          { required: true, message: '设备编号不能为空', trigger: 'blur' }
+        ],
+        devName: [
+          { required: true, message: '设备名称不能为空', trigger: 'blur' }
+        ],
+        devType: [
+          { required: true, message: '设备类型不能为空', trigger: 'blur' }
+        ],
+        ipAddr: [
+          { required: true, message: 'ip地址不能为空', trigger: 'blur' }
+        ],
+        port: [
+          { required: true, message: '端口号不能为空', trigger: 'blur' }
         ]
       },
       downloadLoading: false
@@ -262,10 +293,9 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      listTargetNum(this.listQuery)
+      listDevice(this.listQuery)
         .then(response => {
           this.list = response.data.data.list
-          console.log(response.data.data.list)
           this.total = response.data.data.total
           this.listLoading = false
         })
@@ -286,23 +316,23 @@ export default {
       this.listQuery = {
         page: 1,
         limit: 20,
-        targetName: '',
-        imsi: '',
-        isdn: '',
-        imei: '',
-        id: undefined
+        devNum: '',
+        devType: '',
+        devName: ''
       }
     },
 
     // 清空表单
     resetForm() {
       this.dataForm = {
-        targetName: '',
-        imsi: '',
-        isdn: '',
-        imei: '',
-        targetId: undefined,
-        desc: ''
+        devNum: '',
+        devName: '',
+        devType: '',
+        ipAddr: '',
+        ipv6Addr: '',
+        port: '',
+        description: '',
+        groupId: undefined
       }
     },
     handleCreate() {
@@ -317,7 +347,7 @@ export default {
     createData() {
       this.$refs['dataForm'].validate(valid => {
         if (valid) {
-          createTargetNum(this.dataForm)
+          createDevice(this.dataForm)
             .then(response => {
               this.list.unshift(response.data.data)
               this.dialogFormVisible = false
@@ -346,7 +376,7 @@ export default {
     updateData() {
       this.$refs['dataForm'].validate(valid => {
         if (valid) {
-          updateTargetNum(this.dataForm)
+          updateDevice(this.dataForm)
             .then(() => {
               for (const v of this.list) {
                 if (v.id === this.dataForm.id) {
@@ -371,7 +401,7 @@ export default {
       })
     },
     // handleDelete(row) {
-    //   deleteTargetNum(row)
+    //   deleteDevice(row)
     //     .then(response => {
     //       this.$notify.success({
     //         title: "成功",
@@ -404,7 +434,7 @@ export default {
           '描述'
         ]
         const filterVal = [
-          'targetId',
+          'devId',
           'targetName',
           'imsi',
           'imei',
@@ -445,10 +475,10 @@ export default {
     },
 
     // 执行删除
-    doDelete(targetIds) {
+    doDelete(devIds) {
       this.tableLoading = true
       var _this = this
-      deleteTargetNum(targetIds).then(resp => {
+      deleteDevice(devIds).then(resp => {
         _this.tableLoading = false
         if (resp && resp.status == 200) {
           var data = resp.data
@@ -469,19 +499,19 @@ export default {
         }
       )
         .then(() => {
-          var targetIds = ''
+          var devIds = ''
           for (var i = 0; i < this.multipleSelection.length; i++) {
-            targetIds += this.multipleSelection[i].targetId + ','
-            console.log(targetIds)
+            devIds += this.multipleSelection[i].devId + ','
+            console.log(devIds)
           }
-          this.doDelete(targetIds)
+          this.doDelete(devIds)
         })
         .catch(() => {})
     },
     // 单个删除
     deleteNumber(row) {
       this.$confirm(
-        '此操作将永久删除[' + row.targetName + '], 是否继续?',
+        '此操作将永久删除[' + row.devName + '], 是否继续?',
         '提示',
         {
           confirmButtonText: '确定',
@@ -490,11 +520,10 @@ export default {
         }
       )
         .then(() => {
-          this.doDelete(row.targetId)
+          this.doDelete(row.devId)
         })
         .catch(() => {})
     }
-
   }
 }
 </script>
