@@ -35,7 +35,7 @@ export function updateStorage(data) {
 export function deleteStorage(data) {
   return request({
     url: '/storage/delete',
-    method: 'post',
+    method: 'delete',
     data
   })
 }

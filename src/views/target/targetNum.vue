@@ -24,6 +24,7 @@
         icon="el-icon-download"
         @click="handleDownload"
       >导出</el-button>
+
     </div>
 
     <!--高级搜索框-->
@@ -211,6 +212,7 @@ export default {
 
   data() {
     return {
+
       multipleSelection: [],
       advanceSearchViewVisible: false,
 
