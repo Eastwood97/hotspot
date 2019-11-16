@@ -125,7 +125,7 @@ export const asyncRouterMap = [
     },
     children: [
       {
-        path: 'region',
+        path: 'live',
         component: () => import('@/views/video/live'),
         name: 'region',
         meta: {
@@ -135,7 +135,7 @@ export const asyncRouterMap = [
         }
       },
       {
-        path: 'brand',
+        path: 'record',
         component: () => import('@/views/video/record'),
         name: 'brand',
         meta: {
@@ -232,7 +232,6 @@ export const asyncRouterMap = [
       }
     ]
   },
-
   {
     path: '/sys',
     component: Layout,
@@ -286,7 +285,6 @@ export const asyncRouterMap = [
       }
     ]
   },
-
   {
     path: '/profile',
     component: Layout,

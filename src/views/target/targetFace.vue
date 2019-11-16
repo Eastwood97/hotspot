@@ -169,7 +169,7 @@ import {
   updateTargetFace,
   deleteTargetFace
 } from '@/api/TargetFace'
-import { uploadPath, createStorage, deleteStorage } from '@/api/storage'
+import { createStorage, deleteStorage } from '@/api/storage'
 import { getToken } from '@/utils/auth'
 
 export default {
@@ -228,18 +228,19 @@ export default {
     this.getList()
   },
   methods: {
-    // uploadSuccess() {
-    //   this.$notify.success({
-    //     title: "成功",
-    //     message: "上传成功"
-    //   });
-    //   this.$refs.upload.clearFiles();
-    // },
+    uploadSuccess() {
+      this.$notify.success({
+        title: '成功',
+        message: '上传成功'
+      })
+      this.$refs.upload.clearFiles()
+    },
 
     // 自定义上传照片
     uploadPic(params) {
-      const file = params.file,
-        fileType = file.type
+      const file = params.file
+      const form = new FormData()
+      // fileType = file.type
       // isImage = fileType.indexOf("image/jpeg") != -1,
       // isLt2M = file.size / 1024 / 1024 < 2;
       // 这里常规检验，看项目需求而定
@@ -253,7 +254,6 @@ export default {
       //   return;
       // }
       // 根据后台需求数据格式
-      const form = new FormData()
       // 文件对象
       form.append('file', file)
       // 本例子主要要在请求时添加特定属性，所以要用自己方法覆盖默认的action
@@ -261,15 +261,15 @@ export default {
       // 项目封装的请求方法，下面做简单介绍
       createStorage(form)
         .then(response => {
-          if (this.dataForm.fileId1 == '') {
+          if (this.dataForm.fileId1 === '') {
             this.dataForm.fileId1 = response.data.data
             this.count++
             console.log(this.dataForm.fileId1)
-          } else if (this.dataForm.fileId2 == '') {
+          } else if (this.dataForm.fileId2 === '') {
             this.dataForm.fileId2 = response.data.data
             this.count++
             console.log(this.dataForm.fileId2)
-          } else if (this.dataForm.fileId3 == '') {
+          } else if (this.dataForm.fileId3 === '') {
             this.dataForm.fileId3 = response.data.data
             this.count++
           } else {
@@ -481,7 +481,7 @@ export default {
       var _this = this
       deleteTargetFace(targetIds).then(resp => {
         _this.tableLoading = false
-        if (resp && resp.status == 200) {
+        if (resp && resp.status === 200) {
           var data = resp.data
           _this.$message({ type: data.status, message: data.msg })
           _this.getList()
@@ -544,7 +544,7 @@ export default {
     // 删除图片
     handleRemove(file) {
       this.count--
-      if (this.count == 3) {
+      if (this.count === 3) {
         deleteStorage(this.dataForm.fileId3)
           .then(response => {
             this.dataForm.fileId3 = ''
@@ -555,7 +555,7 @@ export default {
             this.dataForm.fileId3 = ''
           })
       }
-      if (this.count == 2) {
+      if (this.count === 2) {
         deleteStorage(this.dataForm.fileId2)
           .then(response => {
             this.dataForm.fileId2 = ''
@@ -566,7 +566,7 @@ export default {
           })
       }
 
-      if (this.count == 1) {
+      if (this.count === 1) {
         deleteStorage(this.dataForm.fileId1)
           .then(response => {
             this.dataForm.fileId1 = ''
@@ -581,10 +581,10 @@ export default {
     handlePictureCardPreview(file) {
       this.dialogImageUrl = file.url
       this.dialogVisible = true
-    },
-    handleDownload(file) {
-      console.log(file)
     }
+    // handleDownload(file) {
+    //   console.log(file)
+    // }
   }
 }
 </script>
