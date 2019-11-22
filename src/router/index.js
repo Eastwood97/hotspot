@@ -137,7 +137,7 @@ export const asyncRouterMap = [
       {
         path: 'record',
         component: () => import('@/views/video/record'),
-        name: 'brand',
+        name: 'record',
         meta: {
           perms: ['POST /admin/video/record/list', 'GET /admin/video/record/delete', 'POST /admin/video/record/search'],
           title: '视频录播',

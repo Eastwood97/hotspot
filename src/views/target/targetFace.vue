@@ -75,7 +75,7 @@
     </div>
 
     <!-- 添加或修改对话框 -->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" @close="closeDialog">
       <el-form
         ref="dataForm"
         :rules="rules"
@@ -258,18 +258,20 @@ export default {
       form.append('file', file)
       // 本例子主要要在请求时添加特定属性，所以要用自己方法覆盖默认的action
       form.append('clientType', 'xxx')
+      console.log('uploadPic')
+      console.log('up : ' + this.dataForm.fileId1)
+      console.log('up : ' + this.dataForm.fileId2)
+      console.log('up : ' + this.dataForm.fileId3)
       // 项目封装的请求方法，下面做简单介绍
       createStorage(form)
         .then(response => {
-          if (this.dataForm.fileId1 === '') {
+          if (this.dataForm.fileId1 === '' || this.dataForm.fileId1 === undefined) {
             this.dataForm.fileId1 = response.data.data
             this.count++
-            console.log(this.dataForm.fileId1)
-          } else if (this.dataForm.fileId2 === '') {
+          } else if (this.dataForm.fileId2 === '' || this.dataForm.fileId2 === undefined) {
             this.dataForm.fileId2 = response.data.data
             this.count++
-            console.log(this.dataForm.fileId2)
-          } else if (this.dataForm.fileId3 === '') {
+          } else if (this.dataForm.fileId3 === '' || this.dataForm.fileId3 === undefined) {
             this.dataForm.fileId3 = response.data.data
             this.count++
           } else {
@@ -297,10 +299,12 @@ export default {
     // 执行分页查询
     getList() {
       this.listLoading = true
+      console.log('targetName:' + this.listQuery.targetName)
       listTargetFace(this.listQuery)
         .then(response => {
-          this.list = response.data.data.list
-          this.total = response.data.data.total
+          console.log(response.data)
+          this.list = response.data.data
+          this.total = response.data.data.size
           this.listLoading = false
         })
         .catch(() => {
@@ -385,9 +389,44 @@ export default {
       })
     },
     handleUpdate(row) {
+      console.log(row)
+      const fileNames = row.fileName
+      const obj = JSON.parse(fileNames)
+      console.log(obj)
       this.dataForm = Object.assign({}, row)
+      this.dataForm.fileId1 = ''
+      this.dataForm.fileId2 = ''
+      this.dataForm.fileId3 = ''
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
+      if (obj.fileId1 !== '' && obj.fileId1 !== undefined) {
+        const url = 'http://192.168.95.101:9333/' + obj.fileId1
+        this.dataForm.fileId1 = obj.fileId1
+        this.count++
+        const k = {}
+        k.url = url
+        this.fileList.push(k)
+        console.log('-------' + obj.fileId1)
+      }
+      if (obj.fileId2 !== '' && obj.fileId2 !== undefined) {
+        const url = 'http://192.168.95.101:9333/' + obj.fileId2
+        this.dataForm.fileId2 = obj.fileId2
+        this.count++
+        var k1 = {
+          url: ''
+        }
+        k1.url = url
+        this.fileList.push(k1)
+        console.log(obj.fileId2)
+      }
+      if (obj.fileId3 !== '' && obj.fileId3 !== undefined) {
+        const url = 'http://192.168.95.101:9333/' + obj.fileId3
+        this.dataForm.fileId3 = obj.fileId3
+        this.count++
+        const k = {}
+        k.url = url
+        this.fileList.push(k)
+      }
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
@@ -409,12 +448,14 @@ export default {
                 title: '成功',
                 message: '更新成功'
               })
+              this.getList()
             })
             .catch(response => {
               this.$notify.error({
                 title: '失败',
                 message: response.data.errmsg
               })
+              this.getList()
             })
         }
       })
@@ -542,8 +583,10 @@ export default {
       return isJPG && isLt2M
     },
     // 删除图片
-    handleRemove(file) {
+    handleRemove(file, i) {
+      console.log('------' + file)
       this.count--
+      console.log('++++++' + i)
       if (this.count === 3) {
         deleteStorage(this.dataForm.fileId3)
           .then(response => {
@@ -581,6 +624,12 @@ export default {
     handlePictureCardPreview(file) {
       this.dialogImageUrl = file.url
       this.dialogVisible = true
+    },
+    closeDialog() {
+      console.log('sssss')
+      this.$refs.upload.clearFiles()
+      this.fileList = []
+      this.count = 0
     }
     // handleDownload(file) {
     //   console.log(file)
