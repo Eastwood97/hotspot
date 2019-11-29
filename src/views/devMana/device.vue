@@ -423,32 +423,32 @@ export default {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
         const tHeader = [
-          '目标ID',
-          '目标名称',
-          'imsi',
-          'imei',
-          '号码',
-          '创建时间',
-          '更新时间',
-          '操作人id',
-          '描述'
+          '设备ID',
+          '设备名称',
+          '分组',
+          '类型',
+          '编号',
+          '位置',
+          '状态',
+          '描述',
+          '创建时间'
         ]
         const filterVal = [
           'devId',
-          'targetName',
-          'imsi',
-          'imei',
-          'isdn',
-          'createTime',
-          'updateTime',
-          'operatorId',
-          'desc'
+          'devName',
+          'groupId',
+          'devType',
+          'devNum',
+          'place',
+          'status',
+          'description',
+          'createTime'
         ]
         excel.export_json_to_excel2(
           tHeader,
           this.list,
           filterVal,
-          '布控号码信息'
+          '设备管理信息'
         )
         this.downloadLoading = false
       })

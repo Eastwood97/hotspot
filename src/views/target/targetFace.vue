@@ -37,7 +37,11 @@
 
       <el-table-column align="center" label="目标名称" prop="targetName" />
 
-      <el-table-column align="center" min-width="150px" label="目标外貌" prop="imsi" />
+      <el-table-column align="center" min-width="150px" label="目标外貌" prop="fileName" >
+        <template slot-scope="scope">
+          <img :src="picURL+scope.row.fileName.fileId1" width="80">
+        </template>
+      </el-table-column>
 
       <el-table-column align="center" min-width="150px" label="创建时间" prop="createTime" />
       <el-table-column align="center" min-width="150px" label="更新时间" prop="updateTime" />
@@ -182,6 +186,7 @@ export default {
       multipleSelection: [],
       advanceSearchViewVisible: false,
 
+      picURL: '192.168.43.33:9222/',
       count: 1,
       list: [],
       total: 0,
@@ -303,7 +308,11 @@ export default {
       listTargetFace(this.listQuery)
         .then(response => {
           console.log(response.data)
+
+          var data = JSON.stringify(response.data.data)
+          alert(data)
           this.list = response.data.data
+
           this.total = response.data.data.size
           this.listLoading = false
         })

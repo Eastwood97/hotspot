@@ -1,47 +1,41 @@
 <template>
   <div class="navbar">
-    <hamburger :toggle-click="toggleSideBar" :is-active="sidebar.opened" class="hamburger-container"/>
+    <hamburger
+      :toggle-click="toggleSideBar"
+      :is-active="sidebar.opened"
+      class="hamburger-container"
+    />
 
-    <breadcrumb class="breadcrumb-container"/>
+    <breadcrumb class="breadcrumb-container" />
 
     <div class="right-menu">
       <template v-if="device!=='mobile'">
-
         <el-tooltip content="全屏" effect="dark" placement="bottom">
-          <screenfull class="screenfull right-menu-item"/>
+          <screenfull class="screenfull right-menu-item" />
         </el-tooltip>
 
         <el-tooltip content="布局大小" effect="dark" placement="bottom">
-          <size-select class="international right-menu-item"/>
+          <size-select class="international right-menu-item" />
         </el-tooltip>
-
       </template>
 
       <el-dropdown class="avatar-container right-menu-item" trigger="click">
         <div class="avatar-wrapper">
-          <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
-          <i class="el-icon-caret-bottom"/>
+          <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar" >
+          <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
           <router-link to="/">
-            <el-dropdown-item>
-              首页
-            </el-dropdown-item>
+            <el-dropdown-item>首页</el-dropdown-item>
           </router-link>
           <el-dropdown-item divided>
-            <a target="_blank" href="https://github.com/linlinjava/litemall">
-              GitHub
-            </a>
+            <a target="_blank" href="https://github.com/linlinjava/litemall">GitHub</a>
           </el-dropdown-item>
           <el-dropdown-item>
-            <a target="_blank" href="https://gitee.com/linlinjava/litemall">
-              码云
-            </a>
+            <a target="_blank" href="https://gitee.com/linlinjava/litemall">码云</a>
           </el-dropdown-item>
           <el-dropdown-item divided>
-            <router-link to="/profile/password">
-              密码修改
-            </router-link>
+            <router-link to="/profile/password">密码修改</router-link>
           </el-dropdown-item>
           <el-dropdown-item divided>
             <span style="display:block;" @click="logout">退出</span>
@@ -53,6 +47,7 @@
 </template>
 
 <script>
+import { getToken } from '@/utils/auth'
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
@@ -67,21 +62,67 @@ export default {
     SizeSelect
   },
   computed: {
-    ...mapGetters([
-      'sidebar',
-      'name',
-      'avatar',
-      'device'
-    ])
+    ...mapGetters(['sidebar', 'name', 'avatar', 'device'])
+
   },
+
+  mounted() {
+    const userName = 'admin123'
+    // WebSocket
+    if ('WebSocket' in window) {
+      this.websocket = new WebSocket('ws://localhost:8084/websocket/' + userName)
+      this.initWebSocket()
+    } else {
+      alert('当前浏览器 Not support websocket')
+    }
+  },
+  beforeDestroy() {
+    this.onbeforeunload()
+  },
+
   methods: {
     toggleSideBar() {
       this.$store.dispatch('toggleSideBar')
     },
     logout() {
       this.$store.dispatch('LogOut').then(() => {
-        location.reload()// In order to re-instantiate the vue-router object to avoid bugs
+        location.reload() // In order to re-instantiate the vue-router object to avoid bugs
       })
+    },
+    initWebSocket() {
+      // 连接错误
+      this.websocket.onerror = this.setErrorMessage
+
+      // 连接成功
+      this.websocket.onopen = this.setOnopenMessage
+
+      // 收到消息的回调
+      this.websocket.onmessage = this.setOnmessageMessage
+
+      // 连接关闭的回调
+      this.websocket.onclose = this.setOncloseMessage
+
+      // 监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
+      window.onbeforeunload = this.onbeforeunload
+    },
+    setErrorMessage() {
+      console.log('WebSocket连接发生错误   状态码：' + this.websocket.readyState)
+    },
+    setOnopenMessage() {
+      console.log('WebSocket连接成功    状态码：' + this.websocket.readyState)
+    },
+    setOnmessageMessage(event) {
+      // 根据服务器推送的消息做自己的业务处理
+      console.log('服务端返回：' + event.data)
+    },
+    setOncloseMessage() {
+      console.log('WebSocket连接关闭    状态码：' + this.websocket.readyState)
+    },
+    onbeforeunload() {
+      this.closeWebSocket()
+    },
+    closeWebSocket() {
+      this.websocket.close()
     }
   }
 }
@@ -98,7 +139,7 @@ export default {
     float: left;
     padding: 0 10px;
   }
-  .breadcrumb-container{
+  .breadcrumb-container {
     float: left;
   }
   .errLog-container {
@@ -108,8 +149,8 @@ export default {
   .right-menu {
     float: right;
     height: 100%;
-    &:focus{
-     outline: none;
+    &:focus {
+      outline: none;
     }
     .right-menu-item {
       display: inline-block;
@@ -118,7 +159,7 @@ export default {
     .screenfull {
       height: 20px;
     }
-    .international{
+    .international {
       vertical-align: top;
     }
     .avatar-container {
