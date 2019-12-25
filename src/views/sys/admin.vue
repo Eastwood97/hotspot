@@ -1,14 +1,35 @@
 <template>
   <div class="app-container">
-
     <!-- 查询和其他操作 -->
     <div class="filter-container">
-      <el-input v-model="listQuery.username" clearable class="filter-item" style="width: 200px;" placeholder="请输入管理员名称"/>
-      <el-button v-permission="['GET /admin/admin/list']" class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">查找</el-button>
-      <el-button v-permission="['POST /admin/admin/create']" class="filter-item" type="primary" icon="el-icon-edit" @click="handleCreate">添加</el-button>
-      <el-button :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">导出</el-button>
+      <el-input
+        v-model="listQuery.username"
+        clearable
+        class="filter-item"
+        style="width: 200px;"
+        placeholder="请输入管理员名称"/>
+      <el-button
+        v-permission="['GET /admin/admin/list']"
+        class="filter-item"
+        type="primary"
+        icon="el-icon-search"
+        @click="handleFilter">查找
+      </el-button>
+      <el-button
+        v-permission="['POST /admin/admin/create']"
+        class="filter-item"
+        type="primary"
+        icon="el-icon-edit"
+        @click="handleCreate">添加
+      </el-button>
+      <el-button
+        :loading="downloadLoading"
+        class="filter-item"
+        type="primary"
+        icon="el-icon-download"
+        @click="handleDownload">导出
+      </el-button>
     </div>
-
     <!-- 查询结果 -->
     <el-table v-loading="listLoading" :data="list" element-loading-text="正在查询中。。。" border fit highlight-current-row>
       <el-table-column align="center" label="管理员ID" prop="id" sortable/>
@@ -20,26 +41,47 @@
           <img v-if="scope.row.avatar" :src="scope.row.avatar" width="40">
         </template>
       </el-table-column>
-
       <el-table-column align="center" label="管理员角色" prop="roleIds">
         <template slot-scope="scope">
-          <el-tag v-for="roleId in scope.row.roleIds" :key="roleId" type="primary" style="margin-right: 20px;"> {{ formatRole(roleId) }} </el-tag>
+          <el-tag v-for="roleId in scope.row.roleIds" :key="roleId" type="primary" style="margin-right: 20px;">{{
+          formatRole(roleId) }}
+          </el-tag>
         </template>
       </el-table-column>
-
       <el-table-column align="center" label="操作" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button v-permission="['POST /admin/admin/update']" type="primary" size="mini" @click="handleUpdate(scope.row)">编辑</el-button>
-          <el-button v-permission="['POST /admin/admin/delete']" type="danger" size="mini" @click="handleDelete(scope.row)">删除</el-button>
+          <el-button
+            v-permission="['POST /admin/admin/update']"
+            type="primary"
+            size="mini"
+            @click="handleUpdate(scope.row)">编辑
+          </el-button>
+          <el-button
+            v-permission="['POST /admin/admin/delete']"
+            type="danger"
+            size="mini"
+            @click="handleDelete(scope.row)">删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
-
+    <pagination
+      v-show="total>0"
+      :total="total"
+      :page.sync="listQuery.page"
+      :limit.sync="listQuery.limit"
+      @pagination="getList"/>
     <!-- 添加或修改对话框 -->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="dataForm" status-icon label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
+      <el-form
+        ref="dataForm"
+        :rules="rules"
+        :model="dataForm"
+        status-icon
+        label-position="left"
+        label-width="100px"
+        style="width: 400px; margin-left:50px;">
         <el-form-item label="管理员名称" prop="username">
           <el-input v-model="dataForm.username"/>
         </el-form-item>
@@ -74,43 +116,41 @@
         <el-button v-else type="primary" @click="updateData">确定</el-button>
       </div>
     </el-dialog>
-
   </div>
 </template>
-
 <style>
-.avatar-uploader .el-upload {
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-.avatar-uploader .el-upload:hover {
-  border-color: #20a0ff;
-}
-.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 120px;
-  height: 120px;
-  line-height: 120px;
-  text-align: center;
-}
-.avatar {
-  width: 145px;
-  height: 145px;
-  display: block;
-}
-</style>
+  .avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
 
+  .avatar-uploader .el-upload:hover {
+    border-color: #20a0ff;
+  }
+
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 120px;
+    height: 120px;
+    line-height: 120px;
+    text-align: center;
+  }
+
+  .avatar {
+    width: 145px;
+    height: 145px;
+    display: block;
+  }
+</style>
 <script>
 import { listAdmin, createAdmin, updateAdmin, deleteAdmin } from '@/api/admin'
-import { roleOptions } from '@/api/role'
 import { uploadPath } from '@/api/storage'
 import { getToken } from '@/utils/auth'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
-
 export default {
   name: 'Admin',
   components: { Pagination },
@@ -119,7 +159,7 @@ export default {
       uploadPath,
       list: null,
       total: 0,
-      roleOptions: null,
+      roleOptions: [{ value: '0', label: '超级管理员' }, { value: '1', label: '普通管理员' }],
       listLoading: true,
       listQuery: {
         page: 1,
@@ -147,7 +187,8 @@ export default {
         ],
         password: [{ required: true, message: '密码不能为空', trigger: 'blur' }]
       },
-      downloadLoading: false
+      downloadLoading: false,
+      listadmins: ['超级管理员', '普通管理员', '普通管理员']
     }
   },
   computed: {
@@ -159,27 +200,26 @@ export default {
   },
   created() {
     this.getList()
-
-    roleOptions()
-      .then(response => {
-        this.roleOptions = response.data.data.list
-      })
   },
   methods: {
     formatRole(roleId) {
-      for (let i = 0; i < this.roleOptions.length; i++) {
-        if (roleId === this.roleOptions[i].value) {
-          return this.roleOptions[i].label
-        }
-      }
-      return ''
+      return this.listadmins[roleId]
     },
     getList() {
       this.listLoading = true
       listAdmin(this.listQuery)
         .then(response => {
-          this.list = response.data.data.list
-          this.total = response.data.data.total
+          if (response.data.data.type == false) {
+            this.$notify.error({
+              title: '失败',
+              message: '您没有权限访问!'
+            })
+            this.listLoading = false
+            this.$router.push({ path: '/' })
+          } else {
+            this.list = response.data.data.list
+            this.total = response.data.data.total
+          }
           this.listLoading = false
         })
         .catch(() => {
@@ -235,6 +275,9 @@ export default {
     },
     handleUpdate(row) {
       this.dataForm = Object.assign({}, row)
+      var name = this.formatRole(this.dataForm.roleIds)
+      this.dataForm.roleIds = []
+      this.dataForm.roleIds.push(name)
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.$nextTick(() => {
@@ -287,17 +330,17 @@ export default {
     },
     handleDownload() {
       this.downloadLoading = true
-      import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['管理员ID', '管理员名称', '管理员头像']
-        const filterVal = ['id', 'username', 'avatar']
-        excel.export_json_to_excel2(
-          tHeader,
-          this.list,
-          filterVal,
-          '管理员信息'
-        )
-        this.downloadLoading = false
-      })
+        import('@/vendor/Export2Excel').then(excel => {
+          const tHeader = ['管理员ID', '管理员名称', '管理员头像']
+          const filterVal = ['id', 'username', 'avatar']
+          excel.export_json_to_excel2(
+            tHeader,
+            this.list,
+            filterVal,
+            '管理员信息'
+          )
+          this.downloadLoading = false
+        })
     }
   }
 }

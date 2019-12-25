@@ -125,10 +125,12 @@
       <el-pagination
         v-show="total>0"
         :total="total"
+        :page-sizes="[5, 10, 20, 100]"
         :page.sync="listQuery.page"
         :limit.sync="listQuery.limit"
         layout="total, sizes, prev, pager, next, jumper"
-        @pagination="getList"
+        @current-change="currentChange"
+        @size-change="handleSizeChange"
       />
     </div>
 
@@ -221,7 +223,7 @@ export default {
       listLoading: true,
       listQuery: {
         page: 1,
-        limit: 20,
+        limit: 5,
         targetName: '',
         imsi: '',
         isdn: '',
@@ -277,6 +279,17 @@ export default {
           this.listLoading = false
         })
     },
+
+    handleSizeChange(val) {
+      this.listQuery.limit = val
+      this.getList()
+    },
+
+    currentChange(page) {
+      this.listQuery.page = page
+      this.getList()
+    },
+
     // 分页查询
     handleFilter() {
       this.listQuery.page = 1

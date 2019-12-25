@@ -43,6 +43,7 @@
         </el-dropdown-menu>
       </el-dropdown>
     </div>
+    <template/>
   </div>
 </template>
 
@@ -63,14 +64,15 @@ export default {
   },
   computed: {
     ...mapGetters(['sidebar', 'name', 'avatar', 'device'])
-
   },
 
   mounted() {
     const userName = 'admin123'
     // WebSocket
     if ('WebSocket' in window) {
-      this.websocket = new WebSocket('ws://localhost:8084/websocket/' + userName)
+      this.websocket = new WebSocket(
+        'ws://localhost:8084/websocket/' + userName
+      )
       this.initWebSocket()
     } else {
       alert('当前浏览器 Not support websocket')
@@ -81,6 +83,20 @@ export default {
   },
 
   methods: {
+    open1() {
+      this.$notify({
+        title: '成功',
+        message: '人脸识别成功',
+        type: 'success'
+      })
+    },
+    open2() {
+      this.$notify({
+        title: '成功',
+        message: '目标上号',
+        type: 'success'
+      })
+    },
     toggleSideBar() {
       this.$store.dispatch('toggleSideBar')
     },
@@ -106,14 +122,25 @@ export default {
       window.onbeforeunload = this.onbeforeunload
     },
     setErrorMessage() {
-      console.log('WebSocket连接发生错误   状态码：' + this.websocket.readyState)
+      console.log(
+        'WebSocket连接发生错误   状态码：' + this.websocket.readyState
+      )
     },
     setOnopenMessage() {
       console.log('WebSocket连接成功    状态码：' + this.websocket.readyState)
     },
     setOnmessageMessage(event) {
       // 根据服务器推送的消息做自己的业务处理
-      console.log('服务端返回：' + event.data)
+
+      var data = JSON.parse(event.data)
+      alert('服务端返回：' + data.regcognition.compareScore)
+      if (data.regcognition.compareScore) {
+        this.open1()
+      }
+      if (event.data.isTarget == 1) {
+        // 提示上号了
+        this.open2()
+      }
     },
     setOncloseMessage() {
       console.log('WebSocket连接关闭    状态码：' + this.websocket.readyState)

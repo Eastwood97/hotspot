@@ -39,7 +39,24 @@
 
       <el-table-column align="center" min-width="150px" label="目标外貌" prop="fileName" >
         <template slot-scope="scope">
-          <img :src="picURL+scope.row.fileName.fileId1" width="80">
+          <img
+            v-if="scope.row.fileName.fileId1"
+            :src="picURL+scope.row.fileName.fileId1"
+            width="80"
+            preview="1"
+            preview-text="1">
+          <img
+            v-if="scope.row.fileName.fileId2"
+            :src="picURL+scope.row.fileName.fileId2"
+            width="80"
+            preview="2"
+            preview-text="2">
+          <img
+            v-if="scope.row.fileName.fileId3"
+            :src="picURL+scope.row.fileName.fileId3"
+            width="80"
+            preview="3"
+            preview-text="3">
         </template>
       </el-table-column>
 
@@ -71,10 +88,12 @@
       <el-pagination
         v-show="total>0"
         :total="total"
+        :page-sizes="[5, 10, 20, 100]"
         :page.sync="listQuery.page"
         :limit.sync="listQuery.limit"
         layout="total, sizes, prev, pager, next, jumper"
-        @pagination="getList"
+        @current-change="currentChange"
+        @size-change="handleSizeChange"
       />
     </div>
 
@@ -141,6 +160,10 @@
 </template>
 
 <style>
+img{
+  width: 50px;
+  height: 50px;
+}
 .avatar-uploader .el-upload {
   border: 1px dashed #d9d9d9;
   border-radius: 6px;
@@ -186,7 +209,7 @@ export default {
       multipleSelection: [],
       advanceSearchViewVisible: false,
 
-      picURL: '192.168.43.33:9222/',
+      picURL: 'http://192.168.1.15:9222/',
       count: 1,
       list: [],
       total: 0,
@@ -233,6 +256,17 @@ export default {
     this.getList()
   },
   methods: {
+
+    handleSizeChange(val) {
+      this.listQuery.limit = val
+      this.getList()
+    },
+
+    currentChange(page) {
+      this.listQuery.page = page
+      this.getList()
+    },
+
     uploadSuccess() {
       this.$notify.success({
         title: '成功',
@@ -310,7 +344,6 @@ export default {
           console.log(response.data)
 
           var data = JSON.stringify(response.data.data)
-          alert(data)
           this.list = response.data.data
 
           this.total = response.data.data.size
@@ -386,6 +419,7 @@ export default {
               })
               this.dialogFormVisible = false
               this.$refs.upload.clearFiles()
+              this.getList()
             })
             .catch(response => {
               this.$refs.upload.clearFiles()
@@ -400,37 +434,37 @@ export default {
     handleUpdate(row) {
       console.log(row)
       const fileNames = row.fileName
-      const obj = JSON.parse(fileNames)
-      console.log(obj)
+      // const obj = JSON.parse(fileNames)
+
       this.dataForm = Object.assign({}, row)
       this.dataForm.fileId1 = ''
       this.dataForm.fileId2 = ''
       this.dataForm.fileId3 = ''
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
-      if (obj.fileId1 !== '' && obj.fileId1 !== undefined) {
-        const url = 'http://192.168.95.101:9333/' + obj.fileId1
-        this.dataForm.fileId1 = obj.fileId1
+      if (fileNames.fileId1 !== '' && fileNames.fileId1 !== undefined) {
+        const url = this.picURL + fileNames.fileId1
+        this.dataForm.fileId1 = fileNames.fileId1
         this.count++
         const k = {}
         k.url = url
         this.fileList.push(k)
-        console.log('-------' + obj.fileId1)
+        console.log('-------' + fileNames.fileId1)
       }
-      if (obj.fileId2 !== '' && obj.fileId2 !== undefined) {
-        const url = 'http://192.168.95.101:9333/' + obj.fileId2
-        this.dataForm.fileId2 = obj.fileId2
+      if (fileNames.fileId2 !== '' && fileNames.fileId2 !== undefined) {
+        const url = this.picURL + fileNames.fileId2
+        this.dataForm.fileId2 = fileNames.fileId2
         this.count++
         var k1 = {
           url: ''
         }
         k1.url = url
         this.fileList.push(k1)
-        console.log(obj.fileId2)
+        console.log(fileNames.fileId2)
       }
-      if (obj.fileId3 !== '' && obj.fileId3 !== undefined) {
-        const url = 'http://192.168.95.101:9333/' + obj.fileId3
-        this.dataForm.fileId3 = obj.fileId3
+      if (fileNames.fileId3 !== '' && fileNames.fileId3 !== undefined) {
+        const url = this.picURL + fileNames.fileId3
+        this.dataForm.fileId3 = fileNames.fileId3
         this.count++
         const k = {}
         k.url = url
