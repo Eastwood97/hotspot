@@ -1,8 +1,8 @@
 import request from '@/utils/request'
 
-export function info(query) {
+export function listResult(query) {
   return request({
-    url: '/hotcompare-result/countlist',
+    url: '/relatedNumResult',
     method: 'get',
     params: query
   })

@@ -169,6 +169,15 @@ export const asyncRouterMap = [
         }
       },
       {
+        path: 'relatedNum',
+        component: () => import('@/views/campareResult/relatedNum'),
+        name: 'relatedNum',
+        meta: {
+          title: '关联号码',
+          noCache: true
+        }
+      },
+      {
         path: 'numCampare',
         component: () => import('@/views/campareResult/numCampare'),
         name: 'numCampare',

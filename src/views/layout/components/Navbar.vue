@@ -133,7 +133,7 @@ export default {
       // 根据服务器推送的消息做自己的业务处理
 
       var data = JSON.parse(event.data)
-      alert('服务端返回：' + data.regcognition.compareScore)
+      // alert('服务端返回：' + data.regcognition.compareScore)
       if (data.regcognition.compareScore) {
         this.open1()
       }

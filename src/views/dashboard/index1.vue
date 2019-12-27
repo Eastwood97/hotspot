@@ -131,7 +131,7 @@ export default {
       goodsTotal: 0,
       productTotal: 0,
       orderTotal: 0,
-      picURL: 'http://192.168.1.15/',
+      picURL: 'http://192.168.2.14/',
       list: []
     }
   },
