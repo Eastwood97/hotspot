@@ -11,13 +11,13 @@
       />
       <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">查找</el-button>
 
-      <el-button
+      <!-- <el-button
         :loading="downloadLoading"
         class="filter-item"
         type="primary"
         icon="el-icon-download"
         @click="handleDownload"
-      >导出</el-button>
+      >导出</el-button> -->
 
     </div>
 
@@ -192,30 +192,26 @@ export default {
         const tHeader = [
           '目标ID',
           '目标名称',
-          'imsi',
-          'imei',
-          '号码',
-          '创建时间',
-          '更新时间',
-          '操作人id',
-          '描述'
+          '目标外貌',
+          'Top1',
+          'Top2',
+          'Top3',
+          '中标次数'
         ]
         const filterVal = [
-          'targetId',
+          'id',
           'targetName',
-          'imsi',
-          'imei',
-          'isdn',
-          'createTime',
-          'updateTime',
-          'operatorId',
-          'desc'
+          'targetFace',
+          'relatedResult',
+          'relatedResult.topTwo.imsi',
+          'relatedResult.topThree.imsi',
+          'captureNum'
         ]
         excel.export_json_to_excel2(
           tHeader,
           this.list,
           filterVal,
-          '布控号码信息'
+          '关联号码结果'
         )
         this.downloadLoading = false
       })

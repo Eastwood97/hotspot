@@ -24,6 +24,12 @@
         icon="el-icon-download"
         @click="handleDownload"
       >导出</el-button>
+      <el-button
+        :loading="downloadLoading"
+        class="filter-item"
+        type="primary"
+        icon="el-icon-upload"
+      >导入</el-button>
 
     </div>
 
