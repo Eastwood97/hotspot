@@ -11,6 +11,7 @@ import Layout from '@/views/layout/Layout'
  **/
 
 /**
+<<<<<<< HEAD
 * hidden: true                   if `hidden:true` will not show in the sidebar(default is false)
 * alwaysShow: true               if set true, will always show the root menu, whatever its child routes length
 *                                if not set alwaysShow, only more than one route under the children
@@ -18,12 +19,25 @@ import Layout from '@/views/layout/Layout'
 * redirect: noredirect           if `redirect:noredirect` will no redirect in the breadcrumb
 * name:'router-name'             the name is used by <keep-alive> (must set!!!)
 * meta : {
+=======
+ * hidden: true                   if `hidden:true` will not show in the sidebar(default is false)
+ * alwaysShow: true               if set true, will always show the root menu, whatever its child routes length
+ *                                if not set alwaysShow, only more than one route under the children
+ *                                it will becomes nested mode, otherwise not show the root menu
+ * redirect: noredirect           if `redirect:noredirect` will no redirect in the breadcrumb
+ * name:'router-name'             the name is used by <keep-alive> (must set!!!)
+ * meta : {
+>>>>>>> 整合更新
     perms: ['GET /aaa','POST /bbb']     will control the page perms (you can set multiple perms)
     title: 'title'               the name show in submenu and breadcrumb (recommend set)
     icon: 'svg-name'             the icon show in the sidebar,
     noCache: true                if true ,the page will no be cached(default is false)
   }
+<<<<<<< HEAD
 **/
+=======
+ **/
+>>>>>>> 整合更新
 export const constantRouterMap = [
   {
     path: '/redirect',
@@ -79,7 +93,10 @@ export default new Router({
 })
 
 export const asyncRouterMap = [
+<<<<<<< HEAD
 
+=======
+>>>>>>> 整合更新
   {
     path: '/target',
     component: Layout,
@@ -113,7 +130,32 @@ export const asyncRouterMap = [
 
     ]
   },
+<<<<<<< HEAD
 
+=======
+  {
+    path: '/target_info',
+    component: Layout,
+    redirect: 'noredirect',
+    alwaysShow: true,
+    name: 'targetManage',
+    meta: {
+      title: '中标管理',
+      icon: 'chart'
+    },
+    children: [
+      {
+        path: 'targetInfo',
+        component: () => import('@/views/targetInfo/targetInfo'),
+        name: 'targetNum',
+        meta: {
+          title: '中标信息',
+          noCache: true
+        }
+      }
+    ]
+  },
+>>>>>>> 整合更新
   {
     path: '/captureHistory',
     component: Layout,
@@ -225,6 +267,62 @@ export const asyncRouterMap = [
     ]
   },
   {
+<<<<<<< HEAD
+=======
+    path: '/fenXi',
+    component: Layout,
+    redirect: 'noredirect',
+    alwaysShow: true,
+    name: 'fenXi',
+    meta: {
+      title: '分析管理',
+      icon: 'chart'
+    },
+    children: [
+      {
+        path: 'fenXi1',
+        component: () => import('@/views/guishu/guishu'),
+        name: 'fenXi1',
+        meta: {
+          perms: ['GET /admin/video/live'],
+          title: '归属分析',
+          noCache: true
+        }
+      },
+      {
+        path: 'fenXi2',
+        component: () => import('@/views/renliu/renliu'),
+        name: 'fenXi2',
+        meta: {
+          perms: ['POST /admin/video/record/list', 'GET /admin/video/record/delete', 'POST /admin/video/record/search'],
+          title: '人流分析',
+          noCache: true
+        }
+      }
+      // {
+      //   path: 'fenXi3',
+      //   component: () => import('@/views/tongxing/tongxing'),
+      //   name: 'fenXi3',
+      //   meta: {
+      //     perms: ['POST /admin/video/record/list', 'GET /admin/video/record/delete', 'POST /admin/video/record/search'],
+      //     title: '同行分析',
+      //     noCache: true
+      //   }
+      // },
+      // {
+      //   path: 'fenXi4',
+      //   component: () => import('@/views/pinfan/pinfan'),
+      //   name: 'fenXi4',
+      //   meta: {
+      //     perms: ['POST /admin/video/record/list', 'GET /admin/video/record/delete', 'POST /admin/video/record/search'],
+      //     title: '频繁分析',
+      //     noCache: true
+      //   }
+      // }
+    ]
+  },
+  {
+>>>>>>> 整合更新
     path: '/devmana',
     component: Layout,
     redirect: 'device',

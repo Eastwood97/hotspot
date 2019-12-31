@@ -8,87 +8,13 @@
         class="filter-item"
         style="width: 200px;"
         placeholder="请输入imsi"/>
-      <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">查找</el-button>
-      <el-button class="filter-item" type="primary" icon="el-icon-search" @click="showAdvanceSearchView">高级搜索
-      </el-button>
-      <el-button
-        :loading="downloadLoading"
+      <el-input
+        v-model="listQuery.imsi"
+        clearable
         class="filter-item"
-        type="primary"
-        icon="el-icon-download"
-        @click="handleDownload">导出
-      </el-button>
-    </div>
-    <!--高级搜索框-->
-    <div
-      v-show="advanceSearchViewVisible"
-      style="margin-bottom: 10px;border: 1px;border-radius: 5px;border-style: solid;padding: 5px 0px 5px 0px;box-sizing:border-box;border-color: #EBEEF5"
-    >
-      <el-row>
-        <el-col :span="3">
-          设备号:
-          <el-input
-            v-model="listQuery.devId"
-            style="width: 70px"
-            size="mini"
-            width="10px"
-            placeholder="设备号"
-          />
-        </el-col>
-        <el-col :span="4">
-          IMSI:
-          <el-input
-            v-model="listQuery.imsi"
-            style="width: 120px"
-            size="mini"
-            placeholder="请输入IMSI"
-          />
-        </el-col>
-        <el-col :span="4">
-          IMEI:
-          <el-input
-            v-model="listQuery.imei"
-            style="width: 120px"
-            size="mini"
-            placeholder="请输入IMEI"
-          />
-        </el-col>
-        <el-col :span="4">
-          电话号码:
-          <el-input
-            v-model="listQuery.isdn"
-            style="width: 110px"
-            size="mini"
-            placeholder="请输入电话"
-          />
-        </el-col>
-        <el-col :span="5">
-          抓拍时间:
-          <el-date-picker
-            v-model="listQuery.captureTime"
-            :picker-options="pickerOptions"
-            value-format="yyyy-MM-dd HH:mm:ss"
-            size="mini"
-            style="width: 160px"
-<<<<<<< HEAD
-            type="datetime">
-=======
-            type="date">
->>>>>>> 整合更新
-            placeholder="选择日期"/>
-          </el-date-picker>
-        </el-col>
-        <el-col :span="4" :offset="0" style="text-align: right">
-          <el-button size="mini" @click="cancelSearch">取消</el-button>
-          <el-button
-            icon="el-icon-search"
-            type="primary"
-            size="mini"
-            @click="handleFilter"
-          >搜索
-          </el-button>
-        </el-col>
-      </el-row>
+        style="width: 200px;"
+        placeholder="前后时间差,默认30秒"/>
+      <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">查找</el-button>
     </div>
     <!-- 查询结果 -->
     <el-table
@@ -100,12 +26,11 @@
       highlight-current-row
       @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="50"/>
-      <el-table-column align="center" label="id" width="120px" prop="id"/>
-      <el-table-column align="center" label="设备号" width="110px" prop="devId"/>
-      <el-table-column align="center" label="imsi" width="180px" prop="imsi"/>
-      <el-table-column align="center" label="imei" width="180px" prop="imei"/>
-      <el-table-column align="center" label="号码" width="180px" prop="isdn"/>
-      <el-table-column align="center" label="抓拍时间" width="180px" prop="captureTime"/>
+      <el-table-column align="center" label="id" width="130px" prop="id"/>
+      <el-table-column align="center" label="imsi" width="220px" prop="imsi"/>
+      <el-table-column align="center" label="imei" width="200px" prop="imei"/>
+      <el-table-column align="center" label="号码" width="200px" prop="isdn"/>
+      <el-table-column align="center" label="抓拍时间" width="200px" prop="captureTime"/>
       <el-table-column align="center" label="操作" width="145px" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -117,18 +42,11 @@
       </el-table-column>
     </el-table>
     <el-row>
-      <el-button
-        style="margin-top: 10px"
-        size="small"
-        round
-        type="danger"
-        @click="deleteMany">批量删除
-      </el-button>
       <pagination
         :total="total"
         :page.sync="listQuery.page"
         :limit.sync="listQuery.row"
-        style="text-align:right;margin-top: -30px"
+        style="text-align:right"
         layout="total,  prev, pager, next, jumper"
         @pagination="getList"/>
     </el-row>
@@ -148,7 +66,7 @@
   }
 </style>
 <script>
-import { getHotnumInfo, deleteHotnumInfo } from '@/api/hotnuminfo'
+import { listTargetInfo, deleteTargetInfo } from '@/api/targetInfo'
 import { uploadPath } from '@/api/storage'
 import { getToken } from '@/utils/auth'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
@@ -184,11 +102,19 @@ export default {
           }
         }]
       },
-      list: [],
+      list: [
+        {
+          id: 1,
+          targetName: '小三',
+          imsi: '460006682758499',
+          imei: '310120048481877',
+          isdn: '15261802134',
+          captureTime: '2019-10-30 16:48:54'
+        }
+      ],
       total: 0,
       listLoading: true,
       listQuery: {
-        devId: '',
         imsi: '',
         imei: '',
         isdn: '',
@@ -233,7 +159,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      getHotnumInfo(this.listQuery)
+      listTargetInfo(this.listQuery)
         .then(response => {
           this.list = response.data.data.rows
           this.total = response.data.data.total
@@ -268,7 +194,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        deleteHotnumInfo(id)
+        deleteTargetInfo(id)
           .then((data) => {
             this.$message({ type: 'success', message: '删除成功!' })
             this.getList()
@@ -295,7 +221,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        deleteHotnumInfo(ids)
+        deleteTargetInfo(ids)
           .then((data) => {
             this.$message({ type: 'success', message: '删除成功!' })
             this.getList()
@@ -313,18 +239,17 @@ export default {
         import('@/vendor/Export2Excel').then(excel => {
           const tHeader = [
             'id',
-            '设备号',
             'imsi',
             'imei',
             '号码',
             '抓拍时间'
           ]
-          const filterVal = ['id', 'devId', 'imsi', 'imei', 'isdn', 'captureTime']
+          const filterVal = ['id', 'imsi', 'imei', 'isdn', 'captureTime']
           excel.export_json_to_excel2(
             tHeader,
             this.list,
             filterVal,
-            '取号信息'
+            '中标信息'
           )
           this.downloadLoading = false
         })
@@ -347,6 +272,7 @@ export default {
     },
     handleSelectionChange(val) {
       this.multipleSelection = val
+      console.log(this.multipleSelection)
     }
   }
 }

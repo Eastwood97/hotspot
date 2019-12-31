@@ -25,21 +25,11 @@
       style="margin-bottom: 10px;border: 1px;border-radius: 5px;border-style: solid;padding: 5px 0px 5px 0px;box-sizing:border-box;border-color: #EBEEF5"
     >
       <el-row>
-        <el-col :span="3">
-          设备号:
-          <el-input
-            v-model="listQuery.devId"
-            style="width: 70px"
-            size="mini"
-            width="10px"
-            placeholder="设备号"
-          />
-        </el-col>
         <el-col :span="4">
           IMSI:
           <el-input
             v-model="listQuery.imsi"
-            style="width: 120px"
+            style="width: 130px"
             size="mini"
             placeholder="请输入IMSI"
           />
@@ -48,37 +38,32 @@
           IMEI:
           <el-input
             v-model="listQuery.imei"
-            style="width: 120px"
+            style="width: 130px"
             size="mini"
             placeholder="请输入IMEI"
           />
         </el-col>
-        <el-col :span="4">
+        <el-col :span="5">
           电话号码:
           <el-input
             v-model="listQuery.isdn"
-            style="width: 110px"
+            style="width: 130px"
             size="mini"
-            placeholder="请输入电话"
+            placeholder="请输入名称"
           />
         </el-col>
-        <el-col :span="5">
+        <el-col :span="7">
           抓拍时间:
           <el-date-picker
-            v-model="listQuery.captureTime"
+            v-model="listQuery.capture_time"
             :picker-options="pickerOptions"
-            value-format="yyyy-MM-dd HH:mm:ss"
+            value-format="yyyy-MM-dd"
             size="mini"
-            style="width: 160px"
-<<<<<<< HEAD
-            type="datetime">
-=======
             type="date">
->>>>>>> 整合更新
             placeholder="选择日期"/>
           </el-date-picker>
         </el-col>
-        <el-col :span="4" :offset="0" style="text-align: right">
+        <el-col :span="4" :offset="0">
           <el-button size="mini" @click="cancelSearch">取消</el-button>
           <el-button
             icon="el-icon-search"
@@ -100,12 +85,13 @@
       highlight-current-row
       @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="50"/>
-      <el-table-column align="center" label="id" width="120px" prop="id"/>
-      <el-table-column align="center" label="设备号" width="110px" prop="devId"/>
-      <el-table-column align="center" label="imsi" width="180px" prop="imsi"/>
-      <el-table-column align="center" label="imei" width="180px" prop="imei"/>
-      <el-table-column align="center" label="号码" width="180px" prop="isdn"/>
-      <el-table-column align="center" label="抓拍时间" width="180px" prop="captureTime"/>
+      <el-table-column align="center" label="id" width="130px" prop="id"/>
+      <el-table-column align="center" label="姓名" width="220px" prop="target_name"/>
+      <el-table-column align="center" label="imsi" width="220px" prop="imsi"/>
+      <el-table-column align="center" label="imei" width="200px" prop="imei"/>
+      <el-table-column align="center" label="号码" width="200px" prop="isdn"/>
+      <el-table-column align="center" label="备注" width="200px" prop="desc"/>
+      <el-table-column align="center" label="抓拍时间" width="200px" prop="capture_time"/>
       <el-table-column align="center" label="操作" width="145px" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -148,7 +134,7 @@
   }
 </style>
 <script>
-import { getHotnumInfo, deleteHotnumInfo } from '@/api/hotnuminfo'
+import { listTargetInfo, deleteTargetInfo } from '@/api/targetInfo'
 import { uploadPath } from '@/api/storage'
 import { getToken } from '@/utils/auth'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
@@ -184,15 +170,23 @@ export default {
           }
         }]
       },
-      list: [],
+      list: [
+        {
+          id: 1,
+          targetName: '小三',
+          imsi: '460006682758499',
+          imei: '310120048481877',
+          isdn: '15261802134',
+          captureTime: '2019-10-30 16:48:54'
+        }
+      ],
       total: 0,
       listLoading: true,
       listQuery: {
-        devId: '',
         imsi: '',
         imei: '',
         isdn: '',
-        captureTime: null,
+        capture_time: null,
         page: 1,
         row: 7
       },
@@ -233,10 +227,11 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      getHotnumInfo(this.listQuery)
+      listTargetInfo(this.listQuery)
         .then(response => {
           this.list = response.data.data.rows
           this.total = response.data.data.total
+          console.log(this.list)
           this.listLoading = false
         })
         .catch(() => {
@@ -268,7 +263,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        deleteHotnumInfo(id)
+        deleteTargetInfo(id)
           .then((data) => {
             this.$message({ type: 'success', message: '删除成功!' })
             this.getList()
@@ -295,7 +290,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        deleteHotnumInfo(ids)
+        deleteTargetInfo(ids)
           .then((data) => {
             this.$message({ type: 'success', message: '删除成功!' })
             this.getList()
@@ -313,18 +308,17 @@ export default {
         import('@/vendor/Export2Excel').then(excel => {
           const tHeader = [
             'id',
-            '设备号',
             'imsi',
             'imei',
             '号码',
             '抓拍时间'
           ]
-          const filterVal = ['id', 'devId', 'imsi', 'imei', 'isdn', 'captureTime']
+          const filterVal = ['id', 'imsi', 'imei', 'isdn', 'captureTime']
           excel.export_json_to_excel2(
             tHeader,
             this.list,
             filterVal,
-            '取号信息'
+            '中标信息'
           )
           this.downloadLoading = false
         })
@@ -347,6 +341,29 @@ export default {
     },
     handleSelectionChange(val) {
       this.multipleSelection = val
+      console.log(this.multipleSelection)
+    },
+    format(time, format) {
+      var t = new Date(time)
+      var tf = function(i) {
+        return (i < 10 ? '0' : '') + i
+      }
+      return format.replace(/yyyy|MM|dd|HH|mm|ss/g, function(a) {
+        switch (a) {
+          case 'yyyy':
+            return tf(t.getFullYear())
+          case 'MM':
+            return tf(t.getMonth() + 1)
+          case 'mm':
+            return tf(t.getMinutes())
+          case 'dd':
+            return tf(t.getDate())
+          case 'HH':
+            return tf(t.getHours())
+          case 'ss':
+            return tf(t.getSeconds())
+        }
+      })
     }
   }
 }
