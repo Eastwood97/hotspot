@@ -8,6 +8,13 @@ export function listTargetNum(query) {
   })
 }
 
+export function listAll() {
+  return request({
+    url: '/targetNum',
+    method: 'get'
+  })
+}
+
 export function createTargetNum(data) {
   return request({
     url: '/targetNum',
@@ -37,5 +44,14 @@ export function deleteTargetNum(data) {
     url: '/targetNum',
     method: 'delete',
     data
+  })
+}
+export function fetchExport() {
+  return request({
+    url: '/targetNum/exportTarget',
+    method: 'get',
+
+    responseType: 'arraybuffer', // 这个一定要有
+    xsrfHeaderName: 'Authorization'
   })
 }
