@@ -51,20 +51,20 @@
 
       <el-table-column align="center" label="Top1" prop="relatedResult.topOne.imsi,relatedResult.topOne.count" >
         <template slot-scope="scope">
-          <p>{{ scope.row.relatedResult.topOne.imsi }}</p>
-          <p>{{ scope.row.relatedResult.topOne.count }}次</p>
+          <p v-if="scope.row.relatedResult.topOne">{{ scope.row.relatedResult.topOne.imsi }}</p>
+          <p v-if="scope.row.relatedResult.topOne">{{ scope.row.relatedResult.topOne.count }}次</p>
         </template>
       </el-table-column>
       <el-table-column align="center" label="Top2" prop="relatedResult.topTwo.imsi,relatedResult.toptwo.count" >
         <template slot-scope="scope">
-          <p>{{ scope.row.relatedResult.topTwo.imsi }}</p>
-          <p>{{ scope.row.relatedResult.topTwo.count }}次</p>
+          <p v-if="scope.row.relatedResult.topTwo">{{ scope.row.relatedResult.topTwo.imsi }}</p>
+          <p v-if="scope.row.relatedResult.topTwo">{{ scope.row.relatedResult.topTwo.count }}次</p>
         </template>
       </el-table-column>
       <el-table-column align="center" label="Top3" prop="relatedResult.topThree.imsi,relatedResult.topThree.count" >
         <template slot-scope="scope">
-          <p>{{ scope.row.relatedResult.topThree.imsi }}</p>
-          <p>{{ scope.row.relatedResult.topThree.count }}次</p>
+          <p v-if="scope.row.relatedResult.topThree">{{ scope.row.relatedResult.topThree.imsi }}</p>
+          <p v-if="scope.row.relatedResult.topThree">{{ scope.row.relatedResult.topThree.count }}次</p>
         </template>
       </el-table-column>
 
@@ -115,7 +115,7 @@ export default {
       listLoading: true,
       listQuery: {
         page: 1,
-        limit: 5,
+        limit: 10,
         targetName: '',
         id: undefined
       },
@@ -142,6 +142,7 @@ export default {
       listResult(this.listQuery)
         .then(response => {
           this.list = response.data.data.list
+          console.log(response.data.data.list)
           this.total = response.data.data.total
           this.listLoading = false
         })

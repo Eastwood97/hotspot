@@ -11,15 +11,6 @@ import Layout from '@/views/layout/Layout'
  **/
 
 /**
-<<<<<<< HEAD
-* hidden: true                   if `hidden:true` will not show in the sidebar(default is false)
-* alwaysShow: true               if set true, will always show the root menu, whatever its child routes length
-*                                if not set alwaysShow, only more than one route under the children
-*                                it will becomes nested mode, otherwise not show the root menu
-* redirect: noredirect           if `redirect:noredirect` will no redirect in the breadcrumb
-* name:'router-name'             the name is used by <keep-alive> (must set!!!)
-* meta : {
-=======
  * hidden: true                   if `hidden:true` will not show in the sidebar(default is false)
  * alwaysShow: true               if set true, will always show the root menu, whatever its child routes length
  *                                if not set alwaysShow, only more than one route under the children
@@ -27,17 +18,12 @@ import Layout from '@/views/layout/Layout'
  * redirect: noredirect           if `redirect:noredirect` will no redirect in the breadcrumb
  * name:'router-name'             the name is used by <keep-alive> (must set!!!)
  * meta : {
->>>>>>> 整合更新
     perms: ['GET /aaa','POST /bbb']     will control the page perms (you can set multiple perms)
     title: 'title'               the name show in submenu and breadcrumb (recommend set)
     icon: 'svg-name'             the icon show in the sidebar,
     noCache: true                if true ,the page will no be cached(default is false)
   }
-<<<<<<< HEAD
-**/
-=======
  **/
->>>>>>> 整合更新
 export const constantRouterMap = [
   {
     path: '/redirect',
@@ -93,10 +79,6 @@ export default new Router({
 })
 
 export const asyncRouterMap = [
-<<<<<<< HEAD
-
-=======
->>>>>>> 整合更新
   {
     path: '/target',
     component: Layout,
@@ -130,32 +112,7 @@ export const asyncRouterMap = [
 
     ]
   },
-<<<<<<< HEAD
 
-=======
-  {
-    path: '/target_info',
-    component: Layout,
-    redirect: 'noredirect',
-    alwaysShow: true,
-    name: 'targetManage',
-    meta: {
-      title: '中标管理',
-      icon: 'chart'
-    },
-    children: [
-      {
-        path: 'targetInfo',
-        component: () => import('@/views/targetInfo/targetInfo'),
-        name: 'targetNum',
-        meta: {
-          title: '中标信息',
-          noCache: true
-        }
-      }
-    ]
-  },
->>>>>>> 整合更新
   {
     path: '/captureHistory',
     component: Layout,
@@ -220,11 +177,10 @@ export const asyncRouterMap = [
         }
       },
       {
-        path: 'numCampare',
-        component: () => import('@/views/campareResult/numCampare'),
-        name: 'numCampare',
+        path: 'targetInfo',
+        component: () => import('@/views/targetInfo/targetInfo'),
+        name: 'targetInfo',
         meta: {
-          perms: ['GET /admin/brand/list', 'POST /admin/brand/create', 'GET /admin/brand/read', 'POST /admin/brand/update', 'POST /admin/brand/delete'],
           title: '号码比对',
           noCache: true
         }
@@ -267,8 +223,6 @@ export const asyncRouterMap = [
     ]
   },
   {
-<<<<<<< HEAD
-=======
     path: '/fenXi',
     component: Layout,
     redirect: 'noredirect',
@@ -322,7 +276,6 @@ export const asyncRouterMap = [
     ]
   },
   {
->>>>>>> 整合更新
     path: '/devmana',
     component: Layout,
     redirect: 'device',

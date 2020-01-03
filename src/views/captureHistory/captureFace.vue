@@ -71,7 +71,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" min-width="150px" label="抓拍时间" prop="createTime" />
+      <el-table-column align="center" min-width="150px" label="抓拍时间" prop="captureTime" />
 
       <el-table-column align="center" label="操作" width="200" class-name="small-padding fixed-width">
         <template slot-scope="scope">

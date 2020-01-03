@@ -70,11 +70,7 @@
             value-format="yyyy-MM-dd HH:mm:ss"
             size="mini"
             style="width: 160px"
-<<<<<<< HEAD
-            type="datetime">
-=======
             type="date">
->>>>>>> 整合更新
             placeholder="选择日期"/>
           </el-date-picker>
         </el-col>

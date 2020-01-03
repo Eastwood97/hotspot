@@ -92,11 +92,10 @@
 
       <el-table-column align="center" label="号码" prop="isdn" />
 
-      <el-table-column align="center" min-width="150px" label="创建时间" prop="createTime" />
-      <el-table-column align="center" min-width="150px" label="更新时间" prop="updateTime" />
-      <el-table-column align="center" label="操作人ID" prop="operatorId" />
-
+      <el-table-column align="center" min-width="140px" label="案件名" prop="caseName" />
       <el-table-column align="center" min-width="180px" label="描述" prop="desc" />
+      <el-table-column align="center" min-width="160px" label="更新时间" prop="updateTime" />
+      <el-table-column align="center" label="操作人ID" prop="operatorId" />
 
       <el-table-column align="center" label="操作" width="200" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -162,9 +161,9 @@
             :before-upload="beforeUpload"
             :show-file-list="false"
             :file-list="file"
-            class="upload-demo"
             :on-progress="processLoading"
-            action="/basicdata/upload"
+            class="upload-demo"
+            action="http://localhost:8084/admin/targetNum/upload"
           >
             <i class="el-icon-upload"/>
             <div class="el-upload__text">
