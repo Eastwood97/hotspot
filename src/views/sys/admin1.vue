@@ -36,6 +36,11 @@
 
       <el-table-column align="center" label="管理员名称" prop="username"/>
 
+      <el-table-column align="center" label="管理员头像" prop="avatar">
+        <template slot-scope="scope">
+          <img v-if="scope.row.avatar" :src="scope.row.avatar" width="40">
+        </template>
+      </el-table-column>
       <el-table-column align="center" label="管理员角色" prop="roleIds">
         <template slot-scope="scope">
           <el-tag v-for="roleId in scope.row.roleIds" :key="roleId" type="primary" style="margin-right: 20px;">{{
@@ -83,6 +88,18 @@
         <el-form-item label="管理员密码" prop="password">
           <el-input v-model="dataForm.password" type="password" auto-complete="off"/>
         </el-form-item>
+        <el-form-item label="管理员头像" prop="avatar">
+          <el-upload
+            :headers="headers"
+            :action="uploadPath"
+            :show-file-list="false"
+            :on-success="uploadAvatar"
+            class="avatar-uploader"
+            accept=".jpg,.jpeg,.png,.gif">
+            <img v-if="dataForm.avatar" :src="dataForm.avatar" class="avatar">
+            <i v-else class="el-icon-plus avatar-uploader-icon"/>
+          </el-upload>
+        </el-form-item>
         <el-form-item label="管理员角色" prop="roleIds">
           <el-select v-model="dataForm.roleIds" multiple placeholder="请选择">
             <el-option
@@ -97,34 +114,6 @@
         <el-button @click="dialogFormVisible = false">取消</el-button>
         <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">确定</el-button>
         <el-button v-else type="primary" @click="updateData">确定</el-button>
-      </div>
-    </el-dialog>
-
-    <el-dialog :visible.sync="dialogFormVisibles" title="编辑">
-      <el-form
-        ref="dataForm"
-        :rules="rules"
-        :model="dataForm"
-        status-icon
-        label-position="left"
-        label-width="100px"
-        style="width: 400px; margin-left:50px;">
-        <el-form-item label="管理员名称" prop="username">
-          <el-input v-model="dataForm.username"/>
-        </el-form-item>
-        <el-form-item label="管理员角色" prop="roleIds">
-          <el-select v-model="dataForm.roleIds" multiple placeholder="请选择">
-            <el-option
-              v-for="item in roleOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"/>
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisibles = false">取消</el-button>
-        <el-button type="primary" @click="updateData">确定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -187,7 +176,6 @@ export default {
         roleIds: []
       },
       dialogFormVisible: false,
-      dialogFormVisibles: false,
       dialogStatus: '',
       textMap: {
         update: '编辑',
@@ -291,7 +279,7 @@ export default {
       this.dataForm.roleIds = []
       this.dataForm.roleIds.push(name)
       this.dialogStatus = 'update'
-      this.dialogFormVisibles = true
+      this.dialogFormVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
@@ -308,7 +296,7 @@ export default {
                   break
                 }
               }
-              this.dialogFormVisibles = false
+              this.dialogFormVisible = false
               this.$notify.success({
                 title: '成功',
                 message: '更新管理员成功'

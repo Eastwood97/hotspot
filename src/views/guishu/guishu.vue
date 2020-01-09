@@ -208,15 +208,15 @@ export default {
           const json = data.data.data
           console.log(json)
           for (var i = 0; i < json.guoBieList.length; i++) {
-            this.Data.push({ value: json.guoBieList[i].num, name: json.guoBieList[i].area })
+            this.Data.push({ value: json.guoBieList[i].num, name: json.guoBieList[i].attribution })
           }
           console.log(json)
           for (var i = 0; i < json.GuojiCountList.length; i++) {
             this.GJData.push({ value: json.GuojiCountList[i].num, name: json.GuojiCountList[i].country })
           }
-          this.GeGuo.push({ value: json.MyGuoCount.num, name: json.MyGuoCount.country })
+          this.GeGuo.push({ value: json.MyGuoCount.num, name: '中国' })
           for (var i = 0; i < json.GuoWaiGeGuoCount.length; i++) {
-            this.GeGuo.push({ value: json.GuoWaiGeGuoCount[i].num, name: json.GuoWaiGeGuoCount[i].country })
+            this.GeGuo.push({ value: json.GuoWaiGeGuoCount[i].num, name: '中国' })
           }
           this.drawPie1()
           this.drawPie2()

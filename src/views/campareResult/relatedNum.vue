@@ -105,7 +105,7 @@ export default {
   data() {
     return {
 
-      picURL: 'http://192.168.2.14:9222/',
+      picURL: 'http://47.103.113.8:9222/',
 
       multipleSelection: [],
       advanceSearchViewVisible: false,

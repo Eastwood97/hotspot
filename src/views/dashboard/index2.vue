@@ -7,7 +7,7 @@
             <svg-icon icon-class="star" class-name="card-panel-icon"/>
           </div>
           <div class="card-panel-description">
-            <div class="card-panel-text">取号数量</div>
+            <div class="card-panel-text">取号总量</div>
             <count-to :start-val="0" :end-val="hotNumInfoTotal" :duration="2600" class="card-panel-num"/>
           </div>
         </div>
@@ -18,7 +18,7 @@
             <svg-icon icon-class="size" class-name="card-panel-icon"/>
           </div>
           <div class="card-panel-description">
-            <div class="card-panel-text">布控数量</div>
+            <div class="card-panel-text">布控号码</div>
             <count-to :start-val="0" :end-val="blackNum" :duration="2600" class="card-panel-num"/>
 
           </div>
@@ -42,8 +42,8 @@
             <svg-icon icon-class="list" class-name="card-panel-icon"/>
           </div>
           <div class="card-panel-description">
-            <div class="card-panel-text">今日总量</div>
-            <count-to :start-val="0" :end-val="orderTotal" :duration="2600" class="card-panel-num"/>
+            <div class="card-panel-text">今日取号</div>
+            <count-to :start-val="0" :end-val="blackNum" :duration="2600" class="card-panel-num"/>
           </div>
         </div>
       </el-col>
@@ -57,7 +57,8 @@
     <el-row :gutter="40" class="panel-group">
       <el-col :xs="40" :sm="40" :lg="40" class="card-panel-col">
         <div style="margin-top: 3%;width: 100%;height: 200px;display: flex;justify-content: space-between">
-          <div ref="eCharts14" style="margin-top:-20px;width: 100%;height: 243px"/>
+          <div ref="eCharts13" style="margin-top:-20px;width: 40%;height: 243px"/>
+          <div ref="eCharts14" style="margin-top:-20px;width: 55%;height: 243px"/>
         </div>
       </el-col>
     </el-row>
@@ -80,7 +81,7 @@ export default {
       hotNumInfoList: null,
       xData: [],
       ydata: [],
-      todayhotNumInfoNum: '',
+      todayhotNumInfoNum: 0,
       guiShuDi: [],
       xdata: []
     }
@@ -100,19 +101,19 @@ export default {
         const date = this.getDay(-i)
         xData.push(date)
       }
-      const ydata = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      const ydata = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
       for (let j = 0; j < hotNumInfoList.length; j++) {
         const index = this.getDaysBetween(hotNumInfoList[j].capture_time)
         ydata.splice(parseInt(index), 1, hotNumInfoList[j].num)
       }
       const data = JSON.parse(JSON.stringify(this.guiShuDi))
-      // this.drawYuan(data)
+      this.drawYuan(data)
       this.drawLine(xData, ydata)
       for (let i = 1; i < 15; i++) {
         const date = this.getDay(-i)
         this.xdata.push(date)
       }
-      const Ydata = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      const Ydata = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
       const cameraCatInfoServiceHoTnumInfoDateNum = response.data.data.cameraCatInfoServiceHoTnumInfoDateNum
       for (let j = 0; j < cameraCatInfoServiceHoTnumInfoDateNum.length; j++) {
         const index = this.getDaysBetween(cameraCatInfoServiceHoTnumInfoDateNum[j].capture_time)
@@ -286,82 +287,82 @@ export default {
       }
       myChart.setOption(option)
     },
-    // drawYuan(data) {
-    //   const myChart = new echarts.init(this.$refs.eCharts13)
-    //   const option = {
-    //     backgroundColor: '#FFFFFF',
-    //     title: {
-    //       text: '归属地分析',
-    //       left: 'left',
-    //       top: 0,
-    //       textStyle: {
-    //         color: '#040506'
-    //       },
-    //       top: '3%',
-    //       left: '10%'
-    //     },
-    //
-    //     tooltip: {
-    //       trigger: 'item',
-    //       formatter: '{b} : {c} ({d}%)'
-    //     },
-    //
-    //     visualMap: {
-    //       show: false,
-    //       inRange: {
-    //         // colorLightness: [0, 1]
-    //       }
-    //     },
-    //     series: [{
-    //       name: '访问来源',
-    //       type: 'pie',
-    //       radius: '90%',
-    //       center: ['50%', '50%'],
-    //       color: ['#FFB980', '#2EC7C9', '#B6A2DE', '#5AB1EF'], // '#FBFE27','rgb(11,228,96)','#FE5050'
-    //       data: data.sort(function(a, b) {
-    //         return a.value - b.value
-    //       }),
-    //       roseType: 'radius',
-    //
-    //       label: {
-    //         normal: {
-    //           formatter: ['{c|{c}次}', '{b|{b}}'].join('\n'),
-    //           rich: {
-    //             c: {
-    //               color: '#040506',
-    //               fontSize: 10,
-    //               fontWeight: 'bold',
-    //               lineHeight: 3
-    //             },
-    //             b: {
-    //               color: '#040506',
-    //               fontSize: 13,
-    //               height: 20
-    //             }
-    //           }
-    //         }
-    //       },
-    //       labelLine: {
-    //         normal: {
-    //           lineStyle: {
-    //             color: '#200000'
-    //           },
-    //           smooth: 0.2,
-    //           length: 10,
-    //           length2: 20
-    //
-    //         }
-    //       },
-    //       itemStyle: {
-    //         normal: {
-    //           shadowColor: '#FFFFFF',
-    //           shadowBlur: 50
-    //         }
-    //       }
-    //     }]
-    //   }
-    //   myChart.setOption(option)
-    // },
+    drawYuan(data) {
+      const myChart = new echarts.init(this.$refs.eCharts13)
+      const option = {
+        backgroundColor: '#FFFFFF',
+        title: {
+          text: '归属地分析',
+          left: 'left',
+          top: 0,
+          textStyle: {
+            color: '#040506'
+          },
+          top: '3%',
+          left: '10%'
+        },
+
+        tooltip: {
+          trigger: 'item',
+          formatter: '{b} : {c} ({d}%)'
+        },
+
+        visualMap: {
+          show: false,
+          inRange: {
+            // colorLightness: [0, 1]
+          }
+        },
+        series: [{
+          name: '访问来源',
+          type: 'pie',
+          radius: '90%',
+          center: ['50%', '50%'],
+          color: ['#FFB980', '#2EC7C9', '#B6A2DE', '#5AB1EF'], // '#FBFE27','rgb(11,228,96)','#FE5050'
+          data: data.sort(function(a, b) {
+            return a.value - b.value
+          }),
+          roseType: 'radius',
+
+          label: {
+            normal: {
+              formatter: ['{c|{c}次}', '{b|{b}}'].join('\n'),
+              rich: {
+                c: {
+                  color: '#040506',
+                  fontSize: 10,
+                  fontWeight: 'bold',
+                  lineHeight: 3
+                },
+                b: {
+                  color: '#040506',
+                  fontSize: 13,
+                  height: 20
+                }
+              }
+            }
+          },
+          labelLine: {
+            normal: {
+              lineStyle: {
+                color: '#200000'
+              },
+              smooth: 0.2,
+              length: 10,
+              length2: 20
+
+            }
+          },
+          itemStyle: {
+            normal: {
+              shadowColor: '#FFFFFF',
+              shadowBlur: 50
+            }
+          }
+        }]
+      }
+      myChart.setOption(option)
+    },
     drawZhe(Ydata) {
       const myChart = new echarts.init(this.$refs.eCharts14)
       const xData = JSON.parse(JSON.stringify(this.xdata))

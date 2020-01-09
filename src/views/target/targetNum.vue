@@ -17,7 +17,7 @@
         @click="showAdvanceSearchView"
       >高级搜索</el-button>
       <el-button class="filter-item" type="primary" icon="el-icon-edit" @click="handleCreate">添加</el-button>
-      <el-button
+      <!-- <el-button
         :loading="downloadLoading"
         class="filter-item"
         type="primary"
@@ -25,12 +25,12 @@
         @click="exportTarget"
       >导出</el-button>
       <el-button
+        @click="dialogFormVisible2=true"
         :loading="downloadLoading"
         class="filter-item"
         type="primary"
         icon="el-icon-upload，"
-        @click="dialogFormVisible2=true"
-      >导入</el-button>
+      >导入</el-button> -->
     </div>
 
     <!--高级搜索框-->
@@ -341,7 +341,6 @@ export default {
     this.getList()
   },
   methods: {
-
     getList() {
       this.listLoading = true
       listTargetNum(this.listQuery)
@@ -674,6 +673,77 @@ export default {
       this.loadtargets()
     }
 
+  },
+  removeFiles() {
+    this.onRemove()
+  },
+  fileChange(file, fileList) {
+    if (fileList.length > 0) {
+      this.process = fileList[0].progress
+      this.files.push(fileList[0].raw)
+    }
+  },
+  upload() {
+    this.listLoading = true
+    const formData = new FormData()
+    formData.append('file', this.files)
+    this.$refs.upload.submit()
+  },
+  beforeUpload(file) {
+    this.process = null
+    var testmsg = file.name.substring(file.name.lastIndexOf('.') + 1)
+    const extension = testmsg === 'xls'
+    const extension2 = testmsg === 'xlsx'
+    const isLt2M = file.size / 1024 / 1024 < 100
+    if (!extension && !extension2) {
+      this.$message({
+        message: '上传文件只能是 xls、xlsx格式!',
+        type: 'warning'
+      })
+      this.listLoading = false
+    }
+    if (!isLt2M) {
+      this.$message({
+        message: '上传文件大小不能超过 100MB!',
+        type: 'warning'
+      })
+      this.listLoading = false
+    }
+    return extension || extension2 && isLt2M
+  },
+  exceed() {
+    this.$notify({
+      title: '错误',
+      message: '最多只能上传一个文件！',
+      type: 'error'
+    })
+  },
+  handleImageSuccess(response, file, fileList) {
+    this.onRemove()
+    this.dialogFormVisible = false
+    this.listLoading = false
+    if (response.status == 'success') {
+      this.$notify({
+        title: '成功',
+        message: '文件上传成功！',
+        type: 'success'
+      })
+    } else if (response.status == 501) {
+      this.$notify({
+        title: '失败',
+        message: 'imsi,imei,isdn不能都为空',
+        type: 'error'
+      })
+    } else {
+      this.$notify({
+        title: '失败',
+        message: '文件上传失败！',
+        type: 'error'
+      })
+    }
+    this.loadtargets()
   }
+
 }
+
 </script>
