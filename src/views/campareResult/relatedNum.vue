@@ -98,14 +98,14 @@ import {
   listResult
 } from '@/api/relatedNum'
 import { getToken } from '@/utils/auth'
-import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
+// import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 
 export default {
 
   data() {
     return {
 
-      picURL: 'http://47.103.113.8:9222/',
+      picURL: 'http://192.168.2.14:9222/',
 
       multipleSelection: [],
       advanceSearchViewVisible: false,

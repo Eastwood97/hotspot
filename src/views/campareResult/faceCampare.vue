@@ -152,7 +152,6 @@ img {
 
 <script>
 import { listResult, deleteResult } from '@/api/faceCampare'
-import { createStorage, deleteStorage } from '@/api/storage'
 import { getToken } from '@/utils/auth'
 
 export default {
@@ -194,7 +193,7 @@ export default {
       multipleSelection: [],
       advanceSearchViewVisible: false,
 
-      picURL: 'http://47.103.113.8:9222/',
+      picURL: 'http://192.168.2.14:9222/',
       count: 1,
       list: [],
       total: 0,
@@ -294,7 +293,6 @@ export default {
       deleteResult(ids).then(resp => {
         _this.tableLoading = false
         if (resp && resp.status === 200) {
-          var data = resp.data
           _this.$message({
             message: '删除成功',
             type: 'success'

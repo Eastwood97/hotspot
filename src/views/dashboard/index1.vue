@@ -131,7 +131,7 @@ export default {
       goodsTotal: 0,
       productTotal: 0,
       orderTotal: 0,
-      picURL: 'http://47.103.113.8/',
+      picURL: 'http://192.168.2.14/',
       list: []
     }
   },
@@ -146,9 +146,7 @@ export default {
   methods: {
     handleSetLineChartData(type) {
       this.$emit('handleSetLineChartData', type)
-    }
-  },
-  methods: {
+    },
     toggleSideBar() {
       this.$store.dispatch('toggleSideBar')
     },

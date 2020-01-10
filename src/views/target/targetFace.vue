@@ -209,7 +209,7 @@ export default {
       multipleSelection: [],
       advanceSearchViewVisible: false,
 
-      picURL: 'http://47.103.113.8:9222/',
+      picURL: 'http://192.168.2.14:9222/',
       count: 1,
       list: [],
       total: 0,
@@ -343,7 +343,6 @@ export default {
         .then(response => {
           console.log(response.data)
 
-          var data = JSON.stringify(response.data.data)
           this.list = response.data.data
 
           this.total = response.data.data.size
