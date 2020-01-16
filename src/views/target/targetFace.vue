@@ -109,7 +109,7 @@
         style="width: 400px; margin-left:50px;"
       >
         <el-form-item label="目标名称" prop="targetName">
-          <el-input v-model="dataForm.targetName" />
+          <el-input v-model.trim="dataForm.targetName" />
         </el-form-item>
 
         <el-form-item label="品牌商图片">
@@ -147,7 +147,7 @@
         </el-form-item>
 
         <el-form-item label="描述" prop="desc">
-          <el-input v-model="dataForm.desc" />
+          <el-input v-model.trim="dataForm.desc" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">

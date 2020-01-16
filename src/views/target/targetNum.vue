@@ -30,7 +30,7 @@
         class="filter-item"
         type="primary"
         icon="el-icon-upload，"
-      >导入</el-button> -->
+      >导入</el-button>-->
     </div>
 
     <!--高级搜索框-->
@@ -86,11 +86,9 @@
 
       <el-table-column align="center" label="目标名称" prop="targetName" />
 
-      <el-table-column align="center" label="imsi" prop="imsi" />
+      <el-table-column align="center" min-width="140px" label="imsi" prop="imsi" />
 
-      <el-table-column align="center" label="imei" prop="imei" />
-
-      <el-table-column align="center" label="号码" prop="isdn" />
+      <el-table-column align="center" min-width="140px" label="imei" prop="imei" />
 
       <el-table-column align="center" min-width="140px" label="案件名" prop="caseName" />
       <el-table-column align="center" min-width="180px" label="描述" prop="desc" />
@@ -146,7 +144,8 @@
       :destroy-on-close="true"
       title="导入excel表格"
       width="30%"
-      element-loading-text="上传中.....">
+      element-loading-text="上传中....."
+    >
       <el-form :model="form">
         <el-form-item style="text-align: center">
           <el-upload
@@ -165,7 +164,7 @@
             class="upload-demo"
             action="http://localhost:8084/admin/targetNum/upload"
           >
-            <i class="el-icon-upload"/>
+            <i class="el-icon-upload" />
             <div class="el-upload__text">
               <em>点击上传</em>
             </div>
@@ -174,15 +173,15 @@
         </el-form-item>
         <ul class="el-upload-list el-upload-list--text" style="background: #F6F7FB">
           <li tabindex="0" class="el-upload-list__item is-ready div-1">
-            <a v-for="index in files" class="el-upload-list__item-name ">
+            <a v-for="index in files" class="el-upload-list__item-name">
               文件名：
-              <i class="el-icon-document"/>
+              <i class="el-icon-document" />
               {{ index.name }}
             </a>
             <label class="el-upload-list__item-status-label">
-              <i class="el-icon-upload-success el-icon-circle-check"/>
+              <i class="el-icon-upload-success el-icon-circle-check" />
             </label>
-            <i v-if="files.length>0" class="el-icon-close" @click="removeFiles"/>
+            <i v-if="files.length>0" class="el-icon-close" @click="removeFiles" />
           </li>
         </ul>
       </el-form>
@@ -204,26 +203,22 @@
         style="width: 400px; margin-left:50px;"
       >
         <el-form-item label="目标名称" prop="targetName">
-          <el-input v-model="dataForm.targetName" />
+          <el-input v-model.trim="dataForm.targetName" />
         </el-form-item>
         <el-form-item label="imsi" prop="imsi">
-          <el-input v-model="dataForm.imsi" />
+          <el-input v-model.trim="dataForm.imsi" />
         </el-form-item>
 
         <el-form-item label="imei" prop="imei">
-          <el-input v-model="dataForm.imei" />
-        </el-form-item>
-
-        <el-form-item label="电话号码" prop="isdn">
-          <el-input v-model="dataForm.isdn" />
+          <el-input v-model.trim="dataForm.imei" />
         </el-form-item>
 
         <el-form-item label="案件名" prop="caseName">
-          <el-input v-model="dataForm.caseName" />
+          <el-input v-model.trim="dataForm.caseName" />
         </el-form-item>
 
         <el-form-item label="描述" prop="desc">
-          <el-input v-model="dataForm.desc" />
+          <el-input v-model.trim="dataForm.desc" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -325,6 +320,20 @@ export default {
       rules: {
         targetName: [
           { required: true, message: '目标名称不能为空', trigger: 'blur' }
+        ],
+        imsi: [
+          {
+            pattern: /^\d{15}$/,
+            message: '请输入15位imsi',
+            trigger: 'blur'
+          }
+        ],
+        imei: [
+          {
+            pattern: /^\d{14}$/,
+            message: '请输入是imei前14位',
+            trigger: 'blur'
+          }
         ]
       },
       downloadLoading: false
@@ -466,7 +475,8 @@ export default {
       listAll()
         .then(response => {
           this.all = response.data.data.list
-        }).then(() => {
+        })
+        .then(() => {
           handleDownload()
         })
         .catch(() => {
@@ -535,14 +545,23 @@ export default {
     doDelete(targetIds) {
       this.tableLoading = true
       var _this = this
-      deleteTargetNum(targetIds).then(resp => {
-        _this.tableLoading = false
-        if (resp && resp.status == 200) {
-          var data = resp.data
-          _this.$message({ type: data.status, message: data.msg })
-          _this.getList()
-        }
-      })
+      deleteTargetNum(targetIds)
+        .then(resp => {
+          _this.tableLoading = false
+          if (resp && resp.status == 200) {
+            this.$notify.success({
+              title: '成功',
+              message: '删除成功'
+            })
+            _this.getList()
+          }
+        })
+        .catch(response => {
+          this.$notify.error({
+            title: '失败',
+            message: response.data.errmsg
+          })
+        })
     },
     // 批量删除
     deleteManyNumbers() {
@@ -582,9 +601,7 @@ export default {
         .catch(() => {})
     },
 
-    processLoading(event, file, fileList) {
-
-    },
+    processLoading(event, file, fileList) {},
     dialogFormVisibles() {
       this.onRemove()
       this.dialogFormVisible2 = false
@@ -638,7 +655,7 @@ export default {
         })
         this.listLoading = false
       }
-      return extension || extension2 && isLt2M
+      return extension || (extension2 && isLt2M)
     },
     exceed() {
       this.$notify({
@@ -672,7 +689,6 @@ export default {
       }
       this.loadtargets()
     }
-
   },
   removeFiles() {
     this.onRemove()
@@ -709,7 +725,7 @@ export default {
       })
       this.listLoading = false
     }
-    return extension || extension2 && isLt2M
+    return extension || (extension2 && isLt2M)
   },
   exceed() {
     this.$notify({
@@ -743,7 +759,5 @@ export default {
     }
     this.loadtargets()
   }
-
 }
-
 </script>

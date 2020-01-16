@@ -23,7 +23,7 @@
         type="primary"
         icon="el-icon-download"
         @click="handleDownload"
-      >导出</el-button> -->
+      >导出</el-button>-->
     </div>
 
     <!-- 查询结果 -->
@@ -46,7 +46,8 @@
             :src="picURL+scope.row.sceneStorageUrl"
             width="80"
             preview="1"
-            preview-text="场景图">
+            preview-text="场景图"
+          >
         </template>
       </el-table-column>
 
@@ -57,7 +58,8 @@
             :src="picURL+scope.row.captureFaceStorageUrl"
             width="80"
             preview="1"
-            preview-text="抓拍人脸">
+            preview-text="抓拍人脸"
+          >
         </template>
       </el-table-column>
 
@@ -106,7 +108,7 @@
 </template>
 
 <style>
-img{
+img {
   width: 50px;
   height: 50px;
 }
@@ -206,7 +208,6 @@ export default {
     this.getList()
   },
   methods: {
-
     handleSizeChange(val) {
       this.listQuery.limit = val
       this.getList()
@@ -271,16 +272,23 @@ export default {
     doDelete(ids) {
       this.tableLoading = true
       var _this = this
-      deleteResult(ids).then(resp => {
-        _this.tableLoading = false
-        if (resp && resp.status === 200) {
-          _this.$message({
-            msg: '删除成功',
-            type: 'sucess'
+      deleteResult(ids)
+        .then(resp => {
+          _this.tableLoading = false
+          if (resp && resp.status == 200) {
+            this.$notify.success({
+              title: '成功',
+              message: '删除成功'
+            })
+            _this.getList()
+          }
+        })
+        .catch(response => {
+          this.$notify.error({
+            title: '失败',
+            message: response.data.errmsg
           })
-          _this.getList()
-        }
-      })
+        })
     },
     // 批量删除
     deleteManyNumbers() {
