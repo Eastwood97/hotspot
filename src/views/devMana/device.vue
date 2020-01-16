@@ -156,19 +156,18 @@
         </el-form-item>
 
         <el-form-item label="设备类型" prop="devType">
-          <el-select v-model="dataForm.devType" placeholder="请选                                     择活动区域">
-            <el-option label="摄像头" value="1"/>
-            <el-option label="热点" value="2"/>
-            <el-option label="超脑" value="3"/>
+          <el-select
+            v-model="dataForm.devType"
+            placeholder="请选                                     择活动区域"
+          >
+            <el-option label="摄像头" value="1" />
+            <el-option label="热点" value="2" />
+            <el-option label="超脑" value="3" />
           </el-select>
         </el-form-item>
 
         <el-form-item v-if="dataForm.devType==3" label="注册超脑">
-          <el-switch
-            v-model="dataForm.isRegister"
-            :active-value="1"
-            :inactive-value="0"
-          />
+          <el-switch v-model="dataForm.isRegister" :active-value="1" :inactive-value="0" />
         </el-form-item>
 
         <el-form-item label="ip地址" prop="ipAddr">
@@ -279,7 +278,11 @@ export default {
           { required: true, message: '设备名称不能为空', trigger: 'blur' }
         ],
         devType: [
-          { required: true, message: '请至少选择一个设备类型', trigger: 'change' }
+          {
+            required: true,
+            message: '请至少选择一个设备类型',
+            trigger: 'change'
+          }
         ],
         ipAddr: [
           { required: true, message: 'ip地址不能为空', trigger: 'blur' },
@@ -384,10 +387,21 @@ export default {
     createData() {
       this.$refs['dataForm'].validate(valid => {
         if (valid) {
+          // 加载中
+          this.dialogFormVisible = false
+          const loading = this.$loading({
+            lock: true,
+            text: '注册超脑中',
+            spinner: 'el-icon-loading',
+            background: 'rgba(0, 0, 0, 0.7)'
+          })
+          setTimeout(() => {
+            loading.close()
+          }, 5000)
+
           createDevice(this.dataForm)
             .then(response => {
               this.list.unshift(response.data.data)
-              this.dialogFormVisible = false
               this.$notify.success({
                 title: '成功',
                 message: '创建成功'
@@ -413,6 +427,18 @@ export default {
     updateData() {
       this.$refs['dataForm'].validate(valid => {
         if (valid) {
+          // 加载中
+          this.dialogFormVisible = false
+          const loading = this.$loading({
+            lock: true,
+            text: '注册超脑中',
+            spinner: 'el-icon-loading',
+            background: 'rgba(0, 0, 0, 0.7)'
+          })
+          setTimeout(() => {
+            loading.close()
+          }, 4000)
+
           updateDevice(this.dataForm)
             .then(() => {
               for (const v of this.list) {
@@ -429,6 +455,7 @@ export default {
               })
             })
             .catch(response => {
+              this.dialogFormVisible = false
               this.$notify.error({
                 title: '失败',
                 message: response.data.errmsg
