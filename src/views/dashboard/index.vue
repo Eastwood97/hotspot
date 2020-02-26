@@ -25,7 +25,7 @@
         </div>
       </el-col>
       <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
-        <div class="card-panel" >
+        <div class="card-panel">
           <div class="card-panel-icon-wrapper icon-money">
             <svg-icon icon-class="peoples" class-name="card-panel-icon"/>
           </div>
@@ -67,6 +67,7 @@
 <script>
 import { info } from '@/api/dashboard'
 import CountTo from 'vue-count-to'
+
 export default {
   components: {
     CountTo
@@ -92,7 +93,6 @@ export default {
       this.hotNumInfoTotal = response.data.data.hotNumInfoTotal
       this.hotNumInfoList = response.data.data.hotNumInfoList
       this.guiShuDi = response.data.data.guiShuDi
-      console.log(response)
       this.todayhotNumInfoNum = response.data.data.todayhotNumInfoNum
       const hotNumInfoList = this.hotNumInfoList
       const xData = []
@@ -105,6 +105,7 @@ export default {
         const index = this.getDaysBetween(hotNumInfoList[j].capture_time)
         ydata.splice(parseInt(index), 1, hotNumInfoList[j].num)
       }
+      // eslint-disable-next-line no-unused-vars
       const data = JSON.parse(JSON.stringify(this.guiShuDi))
       // this.drawYuan(data)
       this.drawLine(xData, ydata)
@@ -367,7 +368,7 @@ export default {
       const xData = JSON.parse(JSON.stringify(this.xdata))
       const option = {
         title: {
-          text: '人脸统计',
+          text: '近15天人脸统计',
           left: 'left',
           textStyle: {
             color: '#040506',

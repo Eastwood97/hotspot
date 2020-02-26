@@ -102,9 +102,8 @@
     </el-table>
     <el-row>
       <el-button
-        style="margin-top: 10px"
+        :disabled="multipleSelection.length==0"
         size="small"
-        round
         type="danger"
         @click="deleteMany">批量删除
       </el-button>
@@ -112,7 +111,6 @@
         :total="total"
         :page.sync="listQuery.page"
         :limit.sync="listQuery.row"
-        style="text-align:right;margin-top: -30px"
         layout="total,  prev, pager, next, jumper"
         @pagination="getList"/>
     </el-row>

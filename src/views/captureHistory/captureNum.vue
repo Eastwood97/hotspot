@@ -22,9 +22,20 @@
     <!--高级搜索框-->
     <div
       v-show="advanceSearchViewVisible"
-      style="margin-bottom: 10px;border: 1px;border-radius: 5px;border-style: solid;padding: 5px 0px 5px 0px;box-sizing:border-box;border-color: #EBEEF5"
+      style="margin-bottom: 10px;border: 1px;border-radius: 5px;border-style: solid;padding: 10px 0px 10px 0px;box-sizing:border-box;border-color: #EBEEF5;text-align: center;"
     >
       <el-row>
+        <!--        <el-col :span="3">-->
+        <!--          目标:-->
+        <!--          <el-select v-model="listQuery.groupId" placeholder="请选择" size="mini" style="width: 100px">-->
+        <!--            <el-option-->
+        <!--              v-for="item in options"-->
+        <!--              :key="item.value"-->
+        <!--              :label="item.label"-->
+        <!--              :value="item.value"-->
+        <!--              size="mini"/>-->
+        <!--          </el-select>-->
+        <!--        </el-col>-->
         <el-col :span="3">
           设备号:
           <el-input
@@ -74,7 +85,7 @@
             placeholder="选择日期"/>
           </el-date-picker>
         </el-col>
-        <el-col :span="4" :offset="0" style="text-align: right">
+        <el-col :span="4" :offset="0" style="text-align: left;">
           <el-button size="mini" @click="cancelSearch">取消</el-button>
           <el-button
             icon="el-icon-search"
@@ -95,14 +106,16 @@
       fit
       highlight-current-row
       @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="50"/>
-      <el-table-column align="center" label="id" width="120px" prop="id"/>
-      <el-table-column align="center" label="设备号" width="110px" prop="devId"/>
-      <el-table-column align="center" label="imsi" width="180px" prop="imsi"/>
-      <el-table-column align="center" label="imei" width="180px" prop="imei"/>
-      <el-table-column align="center" label="号码" width="180px" prop="isdn"/>
-      <el-table-column align="center" label="抓拍时间" width="180px" prop="captureTime"/>
-      <el-table-column align="center" label="操作" width="145px" class-name="small-padding fixed-width">
+      <el-table-column type="selection" min-width="50"/>
+      <el-table-column align="center" label="id" min-width="120px" prop="id"/>
+      <el-table-column align="center" label="设备号" min-width="110px" prop="dev_id"/>
+      <el-table-column align="center" label="imsi" min-width="180px" prop="imsi"/>
+      <el-table-column align="center" label="imei" min-width="180px" prop="imei"/>
+      <!--      <el-table-column align="center" label="号码" width="180px" prop="isdn"/>-->
+      <!--      <el-table-column align="center" label="号码" width="180px" prop="isdn"/>-->
+      <el-table-column align="center" label="抓拍时间" min-width="180px" prop="capture_time"/>
+      <el-table-column align="center" label="归属地" min-width="110px" prop="attribution"/>
+      <el-table-column align="center" label="操作" min-width="145px" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             type="danger"
@@ -112,11 +125,11 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-row>
+    <div>
       <el-button
-        style="margin-top: 10px"
+        v-if="list.length>0"
+        :disabled="multipleSelection.length==0"
         size="small"
-        round
         type="danger"
         @click="deleteMany">批量删除
       </el-button>
@@ -125,9 +138,10 @@
         :page.sync="listQuery.page"
         :limit.sync="listQuery.row"
         style="text-align:right;margin-top: -30px"
-        layout="total,  prev, pager, next, jumper"
+        layout="total, sizes, prev, pager, next, jumper"
         @pagination="getList"/>
-    </el-row>
+    </div>
+
   </div>
 </template>
 <style>
@@ -180,17 +194,29 @@ export default {
           }
         }]
       },
+      options: [{
+        value: 0,
+        label: '口岸'
+      }, {
+        value: 1,
+        label: '大桥'
+      }, {
+        value: 2,
+        label: '口岸大桥'
+      }],
+      value: '',
       list: [],
       total: 0,
       listLoading: true,
       listQuery: {
+        groupId: 0,
         devId: '',
         imsi: '',
         imei: '',
         isdn: '',
         captureTime: null,
         page: 1,
-        row: 7
+        row: 10
       },
       multipleSelection: [],
       dataForm: {
@@ -232,6 +258,7 @@ export default {
       getHotnumInfo(this.listQuery)
         .then(response => {
           this.list = response.data.data.rows
+          console.log(response)
           this.total = response.data.data.total
           this.listLoading = false
         })

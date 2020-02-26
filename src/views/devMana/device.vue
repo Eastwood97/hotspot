@@ -73,12 +73,13 @@
       v-loading="listLoading"
       :data="list"
       element-loading-text="正在查询中。。。"
+
       border
       fit
       highlight-current-row
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" width="55" />
+      <el-table-column type="selection" width="55"/>
 
       <el-table-column align="center" label="设备id" prop="devId" />
 
@@ -149,45 +150,34 @@
         style="width: 400px; margin-left:50px;"
       >
         <el-form-item label="设备名称" prop="devName">
-          <el-input v-model.trim="dataForm.devName" />
+          <el-input v-model="dataForm.devName" />
         </el-form-item>
         <el-form-item label="设备编号" prop="devNum">
-          <el-input v-model.trim="dataForm.devNum" />
+          <el-input v-model="dataForm.devNum" />
         </el-form-item>
 
         <el-form-item label="设备类型" prop="devType">
-          <el-select
-            v-model="dataForm.devType"
-            placeholder="请选                                     择活动区域"
-          >
-            <el-option label="摄像头" value="1" />
-            <el-option label="热点" value="2" />
-            <el-option label="超脑" value="3" />
-          </el-select>
-        </el-form-item>
-
-        <el-form-item v-if="dataForm.devType==3" label="注册超脑">
-          <el-switch v-model="dataForm.isRegister" :active-value="1" :inactive-value="0" />
+          <el-input v-model="dataForm.devType" />
         </el-form-item>
 
         <el-form-item label="ip地址" prop="ipAddr">
-          <el-input v-model.trim="dataForm.ipAddr" />
+          <el-input v-model="dataForm.ipAddr" />
         </el-form-item>
 
         <el-form-item label="端口号" prop="port">
-          <el-input v-model.trim="dataForm.port" />
+          <el-input v-model="dataForm.port" />
         </el-form-item>
 
         <el-form-item label="分组" prop="groupId">
-          <el-input v-model.trim="dataForm.groupId" />
+          <el-input v-model="dataForm.groupId" />
         </el-form-item>
 
         <el-form-item label="ipv6地址" prop="ipv6Addr">
-          <el-input v-model.trim="dataForm.ipv6Addr" />
+          <el-input v-model="dataForm.ipv6Addr" />
         </el-form-item>
 
         <el-form-item label="描述" prop="description">
-          <el-input v-model.trim="dataForm.description" />
+          <el-input v-model="dataForm.description" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -226,6 +216,7 @@
 </style>
 
 <script>
+
 import {
   listDevice,
   createDevice,
@@ -247,7 +238,7 @@ export default {
       listLoading: 'true',
       listQuery: {
         page: 1,
-        limit: 20,
+        limit: 10,
         devNum: '',
         devType: '',
         devName: ''
@@ -261,7 +252,6 @@ export default {
         port: '',
         description: '',
         port: '',
-        isRegister: '',
         groupId: undefined
       },
       dialogFormVisible: false,
@@ -278,43 +268,13 @@ export default {
           { required: true, message: '设备名称不能为空', trigger: 'blur' }
         ],
         devType: [
-          {
-            required: true,
-            message: '请至少选择一个设备类型',
-            trigger: 'change'
-          }
+          { required: true, message: '设备类型不能为空', trigger: 'blur' }
         ],
         ipAddr: [
-          { required: true, message: 'ip地址不能为空', trigger: 'blur' },
-          {
-            required: true,
-            pattern: /(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}/,
-            message: '请输入正确的ip地址',
-            trigger: 'blur'
-          }
+          { required: true, message: 'ip地址不能为空', trigger: 'blur' }
         ],
         port: [
-          { required: true, message: '端口号不能为空', trigger: 'blur' },
-          {
-            required: true,
-            pattern: /^[0-9]\d*$/,
-            message: '请输入正确的端口号',
-            trigger: 'blur'
-          }
-        ],
-        ipv6Addr: [
-          {
-            pattern: /(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}/,
-            message: '请输入正确的ip地址',
-            trigger: 'blur'
-          }
-        ],
-        groupId: [
-          {
-            pattern: /^[0-9]\d*$/,
-            message: '请输入数字',
-            trigger: 'blur'
-          }
+          { required: true, message: '端口号不能为空', trigger: 'blur' }
         ]
       },
       downloadLoading: false
@@ -331,8 +291,17 @@ export default {
     this.getList()
   },
   methods: {
+    currentChange(page) {
+      this.listQuery.page = page
+      this.getList()
+    },
+    handleSizeChange(val) {
+      this.listQuery.limit = val
+      this.getList()
+    },
     getList() {
       this.listLoading = true
+      console.log(this.listQuery)
       listDevice(this.listQuery)
         .then(response => {
           this.list = response.data.data.list
@@ -387,21 +356,10 @@ export default {
     createData() {
       this.$refs['dataForm'].validate(valid => {
         if (valid) {
-          // 加载中
-          this.dialogFormVisible = false
-          const loading = this.$loading({
-            lock: true,
-            text: '注册超脑中',
-            spinner: 'el-icon-loading',
-            background: 'rgba(0, 0, 0, 0.7)'
-          })
-          setTimeout(() => {
-            loading.close()
-          }, 5000)
-
           createDevice(this.dataForm)
             .then(response => {
               this.list.unshift(response.data.data)
+              this.dialogFormVisible = false
               this.$notify.success({
                 title: '成功',
                 message: '创建成功'
@@ -427,18 +385,6 @@ export default {
     updateData() {
       this.$refs['dataForm'].validate(valid => {
         if (valid) {
-          // 加载中
-          this.dialogFormVisible = false
-          const loading = this.$loading({
-            lock: true,
-            text: '注册超脑中',
-            spinner: 'el-icon-loading',
-            background: 'rgba(0, 0, 0, 0.7)'
-          })
-          setTimeout(() => {
-            loading.close()
-          }, 4000)
-
           updateDevice(this.dataForm)
             .then(() => {
               for (const v of this.list) {
@@ -455,7 +401,6 @@ export default {
               })
             })
             .catch(response => {
-              this.dialogFormVisible = false
               this.$notify.error({
                 title: '失败',
                 message: response.data.errmsg
@@ -540,25 +485,17 @@ export default {
 
     // 执行删除
     doDelete(devIds) {
-      this.tableLoading = true
       var _this = this
-      deleteDevice(devIds)
-        .then(resp => {
-          _this.tableLoading = false
-          if (resp && resp.status == 200) {
-            this.$notify.success({
-              title: '成功',
-              message: '删除成功'
-            })
-            _this.getList()
-          }
-        })
-        .catch(response => {
-          this.$notify.error({
-            title: '失败',
-            message: response.data.errmsg
-          })
-        })
+      console.log(1)
+      deleteDevice(devIds).then(resp => {
+        _this.tableLoading = false
+        if (resp && resp.status == 200) {
+          var data = resp.data
+          console.log(resp)
+          _this.$message({ type: 'success', message: data.errmsg })
+          _this.getList()
+        }
+      })
     },
     // 批量删除
     deleteManyNumbers() {

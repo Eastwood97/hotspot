@@ -26,10 +26,11 @@
       v-loading="listLoading"
       :data="list"
       element-loading-text="正在查询中。。。"
+
       border
       fit
       highlight-current-row
-      @selection-change="handleSelectionChange"
+
     >
       <el-table-column type="selection" width="55"/>
       <el-table-column align="center" label="ID" prop="id" min-width="30px"/>
@@ -48,54 +49,38 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Top1" width="140px" prop="relatedResult.topOne.imsi,relatedResult.topOne.count" >
+      <el-table-column align="center" label="Top1" prop="relatedResult.topOne.imsi,relatedResult.topOne.count" >
         <template slot-scope="scope">
           <p v-if="scope.row.relatedResult.topOne">{{ scope.row.relatedResult.topOne.imsi }}</p>
           <p v-if="scope.row.relatedResult.topOne">{{ scope.row.relatedResult.topOne.count }}次</p>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Top2" width="140px" prop="relatedResult.topTwo.imsi,relatedResult.toptwo.count" >
+      <el-table-column align="center" label="Top2" prop="relatedResult.topTwo.imsi,relatedResult.toptwo.count" >
         <template slot-scope="scope">
           <p v-if="scope.row.relatedResult.topTwo">{{ scope.row.relatedResult.topTwo.imsi }}</p>
           <p v-if="scope.row.relatedResult.topTwo">{{ scope.row.relatedResult.topTwo.count }}次</p>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="Top3" width="140px" prop="relatedResult.topThree.imsi,relatedResult.topThree.count" >
+      <el-table-column align="center" label="Top3" prop="relatedResult.topThree.imsi,relatedResult.topThree.count" >
         <template slot-scope="scope">
           <p v-if="scope.row.relatedResult.topThree">{{ scope.row.relatedResult.topThree.imsi }}</p>
           <p v-if="scope.row.relatedResult.topThree">{{ scope.row.relatedResult.topThree.count }}次</p>
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="中标次数" width="100px" prop="captureNum" />
-      <el-table-column align="center" label="操作" width="120px" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
-          <el-button type="danger" size="mini" @click="deleteNumber(scope.row)">删除</el-button>
-        </template>
-      </el-table-column>
+      <el-table-column align="center" label="中标次数" prop="captureNum" />
     </el-table>
-    <!-- 批量删除-->
 
-    <div style="display: flex;justify-content: space-between;margin: 2px">
-      <el-button
-        v-if="list.length>0"
-        :disabled="multipleSelection.length==0"
-        type="danger"
-        size="mini"
-        @click="deleteManyNumbers"
-      >批量删除</el-button>
-
-      <el-pagination
-        v-show="total>0"
-        :total="total"
-        :page-sizes="[5, 10, 20, 100]"
-        :page.sync="listQuery.page"
-        :limit.sync="listQuery.limit"
-        layout="total, sizes, prev, pager, next, jumper"
-        @current-change="currentChange"
-        @size-change="handleSizeChange"
-      />
-    </div>
+    <el-pagination
+      v-show="total>0"
+      :total="total"
+      :page-sizes="[5, 10, 20, 100]"
+      :page.sync="listQuery.page"
+      :limit.sync="listQuery.limit"
+      layout="total, sizes, prev, pager, next, jumper"
+      @current-change="currentChange"
+      @size-change="handleSizeChange"
+    />
   </div>
 
 </template>
@@ -110,7 +95,7 @@ img{
 
 <script>
 import {
-  listResult, deleteResult
+  listResult
 } from '@/api/relatedNum'
 import { getToken } from '@/utils/auth'
 // import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
@@ -200,63 +185,7 @@ export default {
         targetName: ''
       }
     },
-    // 监听选项变化
-    handleSelectionChange(val) {
-      this.multipleSelection = val
-    },
-    // 执行删除
-    doDelete(ids) {
-      this.tableLoading = true
-      var _this = this
-      deleteResult(ids).then(resp => {
-        _this.tableLoading = false
-        if (resp && resp.status == 200) {
-          this.$notify.success({
-            title: '成功',
-            message: '删除成功'
-          })
-          _this.getList()
-        }
-      })
-        .catch(response => {
-          this.$notify.error({
-            title: '失败',
-            message: response.data.errmsg
-          })
-        })
-    },
-    // 批量删除
-    deleteManyNumbers() {
-      this.$confirm(
-        '此操作将删除[' + this.multipleSelection.length + ']条数据, 是否继续?',
-        '提示',
-        {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }
-      )
-        .then(() => {
-          var ids = ''
-          for (var i = 0; i < this.multipleSelection.length; i++) {
-            ids += this.multipleSelection[i].id + ','
-          }
-          this.doDelete(ids)
-        })
-        .catch(() => {})
-    },
-    // 单个删除
-    deleteNumber(row) {
-      this.$confirm('此操作将永久删除[' + row.id + '], 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      })
-        .then(() => {
-          this.doDelete(row.id)
-        })
-        .catch(() => {})
-    },
+
     // 导出
     handleDownload() {
       this.downloadLoading = true

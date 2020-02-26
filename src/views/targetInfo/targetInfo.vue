@@ -104,18 +104,19 @@
     </el-table>
     <el-row>
       <el-button
-        style="margin-top: 10px"
+        v-if="list.length>0"
+        :disabled="multipleSelection.length==0"
         size="small"
-        round
         type="danger"
         @click="deleteMany">批量删除
       </el-button>
       <pagination
+        v-show="total>0"
         :total="total"
         :page.sync="listQuery.page"
         :limit.sync="listQuery.row"
         style="text-align:right;margin-top: -30px"
-        layout="total,  prev, pager, next, jumper"
+        layout="total, sizes, prev, pager, next, jumper"
         @pagination="getList"/>
     </el-row>
   </div>

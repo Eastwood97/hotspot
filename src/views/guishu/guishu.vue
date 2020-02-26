@@ -216,7 +216,7 @@ export default {
           }
           this.GeGuo.push({ value: json.MyGuoCount.num, name: '中国' })
           for (var i = 0; i < json.GuoWaiGeGuoCount.length; i++) {
-            this.GeGuo.push({ value: json.GuoWaiGeGuoCount[i].num, name: '中国' })
+            this.GeGuo.push({ value: json.GuoWaiGeGuoCount[i].num, name: json.GuoWaiGeGuoCount[i].country })
           }
           this.drawPie1()
           this.drawPie2()

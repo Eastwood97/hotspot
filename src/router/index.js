@@ -309,7 +309,27 @@ export const asyncRouterMap = [
           title: '管理员',
           noCache: true
         }
+      },
+      {
+        path: 'logResult',
+        component: () => import('@/views/log/logResult'),
+        name: 'admin',
+        meta: {
+          perms: ['GET /admin/admin/list', 'POST /admin/admin/create', 'POST /admin/admin/update', 'POST /admin/admin/delete'],
+          title: '日志管理',
+          noCache: true
+        }
       }
+      // {
+      //     path: 'logResult',
+      //     component: () => import('@/views/log/logResult'),
+      //     name: 'logResult',
+      //     meta: {
+      //       perms: ['POST /admin/video/record/list', 'GET /admin/video/record/delete', 'POST /admin/video/record/search'],
+      //       title: '日志管理',
+      //       noCache: true
+      //     }
+      // }
     ]
   },
   {

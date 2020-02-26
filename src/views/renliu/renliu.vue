@@ -211,7 +211,6 @@ export default {
       searchTraffic(this.formSearch).then((data) => {
         if (data && data.data) {
           const json = data.data.data
-          console.log(json)
           for (let i = 0; i < json.length; i++) {
             this.xData.push((json[i].createTime).substring(5, 10))
             this.yData.push(json[i].num)

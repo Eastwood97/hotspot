@@ -1,9 +1,16 @@
 import request from '@/utils/request'
 
-export function listLog(query) {
+export function listLog(param) {
   return request({
-    url: '/log/list',
+    url: '/hotspotLogResult/hotspotLog',
     method: 'get',
-    params: query
+    params: param
+  })
+}
+export function deleteLog(data) {
+  return request({
+    url: '/hotspotLogResult/hotspotLog',
+    method: 'delete',
+    data: data
   })
 }
