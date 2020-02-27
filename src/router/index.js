@@ -83,7 +83,7 @@ export const asyncRouterMap = [
     path: '/target',
     component: Layout,
     redirect: 'noredirect',
-    alwaysShow: true,
+    alwaysShow: false,
     name: 'targetManage',
     meta: {
       title: '布控管理',
@@ -119,6 +119,7 @@ export const asyncRouterMap = [
     redirect: 'noredirect',
     alwaysShow: true,
     name: 'targetManage',
+    roles: ['user'],
     meta: {
       title: '捕获历史',
       icon: 'list'
@@ -306,7 +307,17 @@ export const asyncRouterMap = [
         name: 'admin',
         meta: {
           perms: ['GET /admin/admin/list', 'POST /admin/admin/create', 'POST /admin/admin/update', 'POST /admin/admin/delete'],
-          title: '管理员',
+          title: '用户管理',
+          noCache: true
+        }
+      },
+      {
+        path: 'rolePermission',
+        component: () => import('@/views/sys/rolePermission'),
+        name: 'rolePermission',
+        meta: {
+          perms: ['GET /role/permission/list'],
+          title: '权限管理',
           noCache: true
         }
       },

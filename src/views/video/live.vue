@@ -92,15 +92,15 @@ export default {
         flash: { hls: { withCredentials: false }},
         html5: { hls: { withCredentials: false }},
         sources: [
-          {
-            type: 'rtmp/flv',
-            src: 'rtmp://192.201.102.100/hls/cctv'
-          },
-          {
-            withCredentials: false,
-            type: 'application/x-mpegURL',
-            src: 'http://192.201.102.100/hls/cctv.m3u8'// 这是hls流
-          }
+          // {
+          //   type: 'rtmp/flv',
+          //   src: 'rtmp://192.201.102.100/hls/cctv'
+          // },
+          // {
+          //   withCredentials: false,
+          //   type: 'application/x-mpegURL',
+          //   src: 'http://192.201.102.100/hls/cctv.m3u8'// 这是hls流
+          // }
         ],
         width: '280px',
         height: '120px',
@@ -149,10 +149,21 @@ export default {
   },
   methods: {
     getList() {
+      //  {
+      //       type: 'rtmp/flv',
+      //       src: 'rtmp://192.201.102.100/hls/cctv'
+      //     },
+      //     {
+      //       withCredentials: false,
+      //       type: 'application/x-mpegURL',
+      //       src: 'http://192.201.102.100/hls/cctv.m3u8'// 这是hls流
+      //     }
+
       listRTSPUrl()
         .then(response => {
           this.list = response.data.data.list
           this.total = response.data.data.total
+          this.source = response.data.data.source
         })
         .catch(() => {
           this.list = []

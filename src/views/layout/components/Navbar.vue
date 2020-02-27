@@ -67,7 +67,11 @@ export default {
   },
 
   mounted() {
+   // console.log("----------------+++++++++++++" + getToken());
     const userName = 'admin123'
+   
+   // var permission = window['permission'];
+   // console.log("----------------------:" + permission)
     // WebSocket
     if ('WebSocket' in window) {
       this.websocket = new WebSocket(

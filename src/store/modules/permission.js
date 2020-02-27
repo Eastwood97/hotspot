@@ -6,10 +6,19 @@ import { asyncRouterMap, constantRouterMap } from '@/router'
  * @param route
  */
 function hasPermission(perms, route) {
-  if (route.meta && route.meta.perms) {
-    return perms.some(perm => route.meta.perms.includes(perm))
-  } else {
-    return true
+  // if (route.meta && route.meta.perms) {
+  //   return perms.some(perm => route.meta.perms.includes(perm))
+  // } else {
+  //   return true
+  // }
+  if (route.name)
+  {
+    return perms.some(perm => {
+      console.log("route.path:   " + route.path + "")
+      return perm == route.name;
+    })
+  }else{
+    return true;
   }
 }
 
@@ -51,6 +60,7 @@ const permission = {
   },
   actions: {
     GenerateRoutes({ commit }, data) {
+      console.log("---------------------")
       return new Promise(resolve => {
         const { perms } = data
         let accessedRouters

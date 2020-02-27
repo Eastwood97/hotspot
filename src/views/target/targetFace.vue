@@ -209,7 +209,7 @@ export default {
       multipleSelection: [],
       advanceSearchViewVisible: false,
 
-      picURL: 'http://192.168.2.14:9222/',
+      picURL: 'http://192.168.244.3:9222/',
       count: 1,
       list: [],
       total: 0,
