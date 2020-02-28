@@ -1,7 +1,15 @@
 <template>
   <div class="app-container">
     <!-- 查询和其他操作 -->
+    
     <div class="filter-container">
+      <el-input
+        v-model="listQuery.plateNumber"
+        clearable
+        class="filter-item"
+        style="width: 200px;"
+        placeholder="请输入目标车牌"
+      />
       <div class="filter-item">
         <el-date-picker
           v-model="timeZone"
@@ -23,7 +31,7 @@
         type="primary"
         icon="el-icon-download"
         @click="handleDownload"
-      >导出</el-button> -->
+      >导出</el-button>-->
     </div>
 
     <!-- 查询结果 -->
@@ -39,36 +47,25 @@
 
       <el-table-column align="center" label="ID" prop="id" />
 
-      <el-table-column align="center" min-width="150px" label="场景图" prop="sceneStorageUrl">
+
+
+      <el-table-column align="center" min-width="150px" label="抓拍车牌" prop="captureCarStorageUrl">
         <template slot-scope="scope">
           <img
-            v-if="scope.row.sceneStorageUrl"
-            :src="picURL+scope.row.sceneStorageUrl"
+            v-if="scope.row.captureCarStorageUrl"
+            :src="picURL+scope.row.captureCarStorageUrl"
             width="80"
             preview="1"
-            preview-text="场景图">
+            preview-text="抓拍车牌"
+          />
         </template>
       </el-table-column>
 
-      <el-table-column align="center" min-width="150px" label="抓拍人脸" prop="captureFaceStorageUrl">
-        <template slot-scope="scope">
-          <img
-            v-if="scope.row.captureFaceStorageUrl"
-            :src="picURL+scope.row.captureFaceStorageUrl"
-            width="80"
-            preview="1"
-<<<<<<< Updated upstream
-            preview-text="抓拍人脸">
-=======
-            preview-text="抓拍人脸"
-          />
->>>>>>> Stashed changes
-        </template>
-      </el-table-column>
+        <el-table-column align="center" label="车牌号" prop="plateNumber" />
 
       <el-table-column align="center" label="设备id" prop="devId" />
 
-      <el-table-column align="center" label="属性" prop="quality">
+      <el-table-column align="center" label="属性" prop="isTarget">
         <template slot-scope="scope">
           <span v-if="scope.row.quality===0">普通</span>
           <span v-else>目标</span>
@@ -76,31 +73,7 @@
       </el-table-column>
 
       <el-table-column align="center" min-width="150px" label="抓拍时间" prop="captureTime" />
-      <el-table-column
-        align="center"
-        label="视频"
-        width="100"
-        class-name="small-padding fixed-width"
-        prop="isDownLoad"
-      >
-        <template slot-scope="scope">
-          <el-button
-            type="primary"
-            v-if="scope.row.isDownload===0"
-            size="mini"
-            @click="downLoadVedio(scope.row)"
-          >下载</el-button>
-          <el-button type="primary" v-else-if="scope.row.isDownload===2" size="mini">
-            <i class="el-icon-loading"></i>
-          </el-button>
-          <el-button
-            type="primary"
-            v-if="scope.row.vedioId"
-            size="mini"
-            @click="playVedio(scope.row)"
-          >观看</el-button>
-        </template>
-      </el-table-column>
+
 
       <el-table-column align="center" label="操作" width="200" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -135,7 +108,7 @@
 </template>
 
 <style>
-img{
+img {
   width: 50px;
   height: 50px;
 }
@@ -165,7 +138,7 @@ img{
 </style>
 
 <script>
-import { listResult, deleteResult, doDownload } from "@/api/cameraCatInfo";
+import { listResult, deleteResult } from "@/api/captureCar";
 import { getToken } from "@/utils/auth";
 // import Pagination from '@/components/Pagination'
 
@@ -205,28 +178,23 @@ export default {
         ]
       },
 
-      isDownLoad: "1",
-      dialogImageUrl: "",
       multipleSelection: [],
-      advanceSearchViewVisible: false,
 
-      picURL: 'http://192.168.244.3:9222/',
+      picURL: "http://192.168.2.14:9222/",
       count: 1,
       list: [],
       total: 0,
       timeZone: "",
       listLoading: true,
       listQuery: {
+        plateNumber:'',
         page: 1,
         limit: 10,
         startTime: "",
         endTime: " ",
         id: undefined
       },
-      downloadLoading: false,
-      downloadTime:{
-         captureTime:"",
-      },
+     
     };
   },
   computed: {
@@ -240,7 +208,6 @@ export default {
     this.getList();
   },
   methods: {
-
     handleSizeChange(val) {
       this.listQuery.limit = val;
       this.getList();
@@ -279,175 +246,69 @@ export default {
       this.getList();
     },
 
-    // 清空查询条件
-    emptyListQuery() {
-      this.listQuery = {
-        page: 1,
-        limit: 20,
-        timeZone: "",
-        id: undefined
-      };
-    },
-
-    // 取消搜索
-    cancelSearch() {
-      this.advanceSearchViewVisible = false;
-      this.emptyListQuery();
-      this.beginDateScope = "";
-      this.getList();
-    },
     // 监听选项变化
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
-
     // 执行删除
     doDelete(ids) {
       this.tableLoading = true
       var _this = this
-      deleteResult(ids).then(resp => {
-        _this.tableLoading = false
-        if (resp && resp.status === 200) {
-          _this.$message({
-            msg: '删除成功',
-            type: 'sucess'
+      deleteResult(ids)
+        .then(resp => {
+          _this.tableLoading = false
+          if (resp && resp.status == 200) {
+            this.$notify.success({
+              title: '成功',
+              message: '删除成功'
+            })
+            _this.getList()
+          }
+        })
+        .catch(response => {
+          this.$notify.error({
+            title: '失败',
+            message: "删除失败"
           })
-          _this.getList()
-        }
-      })
+        })
     },
-    // 批量删除
+     // 批量删除
     deleteManyNumbers() {
       this.$confirm(
-        "此操作将删除[" + this.multipleSelection.length + "]条数据, 是否继续?",
-        "提示",
+        '此操作将删除[' + this.multipleSelection.length + ']条数据, 是否继续?',
+        '提示',
         {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
         }
       )
         .then(() => {
-          var rowlist = [];
+          var ids = ''
           for (var i = 0; i < this.multipleSelection.length; i++) {
-            // ids += this.multipleSelection[i].id + ','
-            // catchPicUrls+=this.multipleSelection[i].captureFaceStorageUrl + ','
-            rowlist[i] = this.multipleSelection[i];
-            if (this.multipleSelection[i].quality == 1) {
-              haveTarget = true;
-            }
+            ids += this.multipleSelection[i].id + ','
+            console.log(ids)
           }
-          if (haveTarget == true) {
-            this.$confirm("抓拍照片中有中标抓拍，是否级联删除?", "提示", {
-              confirmButtonText: "确定",
-              cancelButtonText: "只删除普通抓拍",
-              type: "warning"
-            })
-              .then(() => {
-                this.doDelete(rowlist);
-              })
-              .catch(() => {
-                let data = [];
-                rowlist.forEach((item, i) => {
-                  for (let key in item) {
-                    
-                    if (item.quality == 0) {
-                      data.push(item[key]);
-                    }
-                     this.doDelete(data);
-                  }
-                });
-              });
-          }
+          this.doDelete(ids)
         })
-        .catch(() => {});
+        .catch(() => {})
     },
     // 单个删除
     deleteNumber(row) {
-      this.$confirm("此操作将永久删除[" + row.id + "], 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
+      this.$confirm(
+        '此操作将永久删除[' + row.plateNumber + '], 是否继续?',
+        '提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      )
         .then(() => {
-          var rowlist = [];
-          rowlist[0] = row;
-          if (row.quality == 1) {
-            //询问是否删除
-
-            this.$confirm("此消息关联中标结果, 是否继续删除?", "提示", {
-              confirmButtonText: "确定",
-              cancelButtonText: "取消",
-              type: "warning"
-            })
-              .then(() => {
-                this.doDelete(rowlist);
-              })
-              .catch(() => {});
-          }
-          //   this.doDelete(rowlist)
+          this.doDelete(row.id)
         })
-        .catch(() => {});
+        .catch(() => {})
     },
-
-    //下载视频
-    downLoadVedio(row) {
-      row.isDownload = 2;
-      this.downloadTime.captureTime=row.captureTime
-      doDownload(this.downloadTime)
-        .then(response => {
-          //赋值下载状态
-          row.isDownLoad = response.data.data.isDownLoad;
-          //赋值视频id
-          row.vidioId = response.data.data.isDownLoad.vidioId;
-
-          this.listLoading = false;
-        })
-        .catch(() => {
-          row.isDownload = 0;
-          this.$notify.error({
-            title: "失败",
-            message: '下载失败'
-          });
-        });
-    },
-
-    // doDownLoadVedio(captureTime) {},
-    // 导出
-    handleDownload() {
-      this.downloadLoading = true;
-      import("@/vendor/Export2Excel").then(excel => {
-        const tHeader = [
-          "目标ID",
-          "目标名称",
-          "imsi",
-          "imei",
-          "号码",
-          "创建时间",
-          "更新时间",
-          "操作人id",
-          "描述"
-        ];
-        const filterVal = [
-          "targetId",
-          "targetName",
-          "imsi",
-          "imei",
-          "isdn",
-          "createTime",
-          "updateTime",
-          "operatorId",
-          "desc"
-        ];
-        excel.export_json_to_excel2(
-          tHeader,
-          this.list,
-          filterVal,
-          "布控号码信息"
-        );
-        this.downloadLoading = false;
-      });
-    }
   }
 };
 </script>

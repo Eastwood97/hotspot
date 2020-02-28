@@ -108,7 +108,17 @@ export const asyncRouterMap = [
           title: '布控人脸',
           noCache: true
         }
-      }
+      },
+      {
+        path: 'targetCar',
+        component: () => import('@/views/target/targetCar'),
+        name: 'targetCar',
+        meta: {
+          perms: ['GET /admin/brand/list', 'POST /admin/brand/create', 'GET /admin/brand/read', 'POST /admin/brand/update', 'POST /admin/brand/delete'],
+          title: '布控车牌',
+          noCache: true
+        }
+      },
 
     ]
   },
@@ -143,7 +153,17 @@ export const asyncRouterMap = [
           title: '号码捕获',
           noCache: true
         }
-      }
+      },
+      {
+        path: 'captureCar',
+        component: () => import('@/views/captureHistory/captureCar'),
+        name: 'captureCar',
+        meta: {
+          perms: ['GET /admin/brand/list', 'POST /admin/brand/create', 'GET /admin/brand/read', 'POST /admin/brand/update', 'POST /admin/brand/delete'],
+          title: '车牌捕获',
+          noCache: true
+        }
+      },
 
     ]
   },
@@ -185,7 +205,17 @@ export const asyncRouterMap = [
           title: '号码比对',
           noCache: true
         }
-      }
+      },
+      {
+        path: 'carCampare',
+        component: () => import('@/views/campareResult/carCampare'),
+        name: 'carCampare',
+        meta: {
+          title: '车牌比对',
+          noCache: true
+        }
+      },
+
 
     ]
   },
