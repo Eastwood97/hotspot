@@ -82,7 +82,7 @@
     >
       <el-table-column type="selection" width="55" />
 
-      <el-table-column align="center" label="目标ID" prop="targetId" />
+      <el-table-column align="center" type="index" :index="indexMethod" label="ID"  />
 
       <el-table-column align="center" label="目标名称" prop="targetName" />
 
@@ -477,7 +477,7 @@ export default {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
         const tHeader = [
-          '目标ID',
+          'ID',
           '目标名称',
           'imsi',
           'imei',
@@ -683,6 +683,9 @@ export default {
       this.files.push(fileList[0].raw)
     }
   },
+   indexMethod(index) {
+      return (this.listQuery.page - 1) * this.listQuery.limit + index + 1;
+    },
   upload() {
     this.listLoading = true
     const formData = new FormData()

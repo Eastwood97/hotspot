@@ -46,7 +46,7 @@
     >
       <el-table-column type="selection" width="55" />
 
-      <el-table-column align="center" label="ID" prop="id" />
+      <el-table-column align="center" type="index" :index="indexMethod" label="ID" />
 
       <el-table-column align="center" min-width="150px" label="场景图" prop="sceneStorageUrl">
         <template slot-scope="scope">
@@ -87,6 +87,31 @@
       <el-table-column align="center" label="相似度" prop="compareScore" />
 
       <el-table-column align="center" min-width="150px" label="抓拍时间" prop="captureTime" />
+      <el-table-column
+        align="center"
+        label="视频"
+        width="100"
+        class-name="small-padding fixed-width"
+        prop="isDownLoad"
+      >
+        <template slot-scope="scope">
+          <el-button
+            type="primary"
+            v-if="scope.row.isDownload===0"
+            size="mini"
+            @click="downLoadVedio(scope.row)"
+          >下载</el-button>
+          <el-button type="primary" v-else-if="scope.row.isDownload===2" size="mini">
+            <i class="el-icon-loading"></i>
+          </el-button>
+          <el-button
+            type="primary"
+            v-if="scope.row.vedioId"
+            size="mini"
+            @click="playVedio(scope.row)"
+          >观看</el-button>
+        </template>
+      </el-table-column>
 
       <el-table-column align="center" label="操作" width="200" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -151,7 +176,7 @@ img {
 </style>
 
 <script>
-import { listResult, deleteResult } from '@/api/faceCampare'
+import { listResult, deleteResult ,doDownload} from '@/api/faceCampare'
 import { getToken } from '@/utils/auth'
 
 export default {
@@ -188,12 +213,12 @@ export default {
           }
         ]
       },
-
+      isDownLoad: "1",
       dialogImageUrl: '',
       multipleSelection: [],
       advanceSearchViewVisible: false,
 
-      picURL: 'http://192.168.244.3:9222/',
+      picURL: 'http://192.168.70.18:9222/',
       count: 1,
       list: [],
       total: 0,
@@ -205,6 +230,10 @@ export default {
         startTime: '',
         endTime: '',
         id: undefined
+      },
+      downParams:{
+        captureTime:"",
+        devIp:""
       },
       downloadLoading: false
     }
@@ -286,22 +315,22 @@ export default {
       this.multipleSelection = val
     },
 
-    // 执行删除
+// 执行删除
     doDelete(ids) {
-      this.tableLoading = true
-      var _this = this
+      this.tableLoading = true;
+      var _this = this;
       deleteResult(ids).then(resp => {
-        _this.tableLoading = false
+        _this.tableLoading = false;
         if (resp && resp.status === 200) {
           _this.$message({
-            message: '删除成功',
-            type: 'success'
-          })
-          _this.getList()
+            msg: "删除成功",
+            type: "sucess"
+          });
+          _this.getList();
         }
-      })
+      });
     },
-    // 批量删除
+      // 批量删除
     deleteManyNumbers() {
       this.$confirm(
         '此操作将删除[' + this.multipleSelection.length + ']条数据, 是否继续?',
@@ -313,25 +342,54 @@ export default {
         }
       )
         .then(() => {
-          var ids = ''
+          var ids = '';
+          var fileIds='';
           for (var i = 0; i < this.multipleSelection.length; i++) {
             ids += this.multipleSelection[i].id + ','
+            fileIds+=this.multipleSelection[i].sceneStorageUrl + ','+this.multipleSelection[i].captureFaceStorageUrl+","
           }
-          this.doDelete(ids)
+          this.doDelete(ids,fileIds);
         })
         .catch(() => {})
     },
     // 单个删除
     deleteNumber(row) {
-      this.$confirm('此操作将永久删除[' + row.id + '], 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      })
+      this.$confirm(
+        '此操作将永久删除数据与文件, 是否继续?',
+        '提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      )
         .then(() => {
-          this.doDelete(row.id)
+          let fileIds=row.sceneStorageUrl+","+captureFaceStorageUrl
+          this.doDelete(row.id,fileIds);
         })
         .catch(() => {})
+    },
+      //下载视频
+    downLoadVedio(row) {
+      row.isDownload = 2;
+      this.downParams.captureTime = row.captureTime;
+      this.downParams.devIp=row.devIp;
+      doDownload(this.downParams)
+        .then(response => {
+          //赋值下载状态
+          row.isDownLoad = response.data.data.isDownLoad;
+          //赋值视频id
+          row.vidioId = response.data.data.isDownLoad.vidioId;
+
+          this.listLoading = false;
+        })
+        .catch(() => {
+          row.isDownload = 0;
+          this.$notify.error({
+            title: "失败",
+            message: "下载失败"
+          });
+        });
     },
     // 导出
     handleDownload() {

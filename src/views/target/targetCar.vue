@@ -43,7 +43,7 @@
     >
       <el-table-column type="selection" width="55" />
 
-      <el-table-column align="center" label="目标ID" prop="targetId" />
+      <el-table-column align="center" type="index" :index="indexMethod" label="ID"  />
 
       <el-table-column align="center" label="目标车牌" prop="plateNumber" />
  
@@ -451,7 +451,9 @@ export default {
         })
         .catch(() => {})
     },
-
+     indexMethod(index) {
+      return (this.listQuery.page - 1) * this.listQuery.limit + index + 1;
+    },
   }
 }
 </script>

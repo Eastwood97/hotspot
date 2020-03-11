@@ -46,7 +46,7 @@
     >
       <el-table-column type="selection" width="55" />
 
-      <el-table-column align="center" label="ID" prop="id" />
+      <el-table-column align="center" type="index" :index="indexMethod" label="ID"/>
 
  
 
@@ -304,6 +304,10 @@ export default {
           this.doDelete(row.id)
         })
         .catch(() => {})
+    },
+
+     indexMethod(index) {
+      return (this.listQuery.page - 1) * this.listQuery.limit + index + 1;
     },
     // 导出
     handleDownload() {

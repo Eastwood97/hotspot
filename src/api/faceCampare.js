@@ -15,3 +15,11 @@ export function deleteResult(data) {
     data
   })
 }
+
+export function doDownload(query) {
+  return request({
+    url: '/faceCampareResult/downloadVedio',
+    method: 'get',
+    params: query
+  })
+}
