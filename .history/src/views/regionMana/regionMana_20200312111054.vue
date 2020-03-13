@@ -153,12 +153,12 @@ export default {
     let regionNameValidate = (rule, value, callback) => {
       //查询区域名是否重复
       let regionName=value.trim();
-      console.log(regionName)
-      getRegionNameCount(regionName).then(res => {
+      alert(regionName)
+      getRegionNameCount(value).then(res => {
         console.log(res);
-        if (res.data.data <= 0) {
+        if (res.rel && res.data.data <= 0) {
           callback();
-        } else if (res.data.data > 0) {
+        } else if (res.rel && res.data > 0) {
           callback("区域名称已经存在");
         } else {
           this.$notify.error({

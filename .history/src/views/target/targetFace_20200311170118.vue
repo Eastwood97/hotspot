@@ -343,7 +343,7 @@ export default {
         .then(response => {
           console.log(response.data)
 
-          this.list = response.data.data.list
+          this.list = response.data.data
 
           this.total = response.data.data.total
           this.listLoading = false

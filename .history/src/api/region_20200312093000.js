@@ -44,7 +44,8 @@ export function deleteRegion(data) {
 
 export function getRegionNameCount(data) {
   return request({
-    url: '/region/getRegionNameCount?regionName='+data,
-    method: 'get'
+    url: '/region/getRegionNameCount',
+    method: 'get',
+    data
   })
 }

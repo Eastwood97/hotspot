@@ -140,8 +140,7 @@ import {
   listSubRegion,
   createRegion,
   updateRegion,
-  deleteRegion,
-  getRegionNameCount
+  deleteRegion
 } from "@/api/region";
 import { uploadPath } from "@/api/storage";
 import { getToken } from "@/utils/auth";
@@ -149,25 +148,23 @@ import Pagination from "@/components/Pagination"; // Secondary package based on 
 
 export default {
   data() {
-        //区域名校验
+    //流水号校验
     let regionNameValidate = (rule, value, callback) => {
       //查询区域名是否重复
-      let regionName=value.trim();
-      console.log(regionName)
       getRegionNameCount(regionName).then(res => {
         console.log(res);
-        if (res.data.data <= 0) {
+        if (res.rel && res.data <= 0) {
           callback();
-        } else if (res.data.data > 0) {
-          callback("区域名称已经存在");
+        } else if (res.rel && res.data > 0) {
+          callback("测试批次号已经存在");
         } else {
           this.$notify.error({
             title: "失败",
-            message: "区域名称查询重复失败！",
+            message: "测试批次号查询重复失败！",
             duration: 2000
           });
         }
-      }).catch((e) => {});
+      });
     };
     return {
       multipleSelection: [],
@@ -195,15 +192,11 @@ export default {
       rules: {
         regionName: [
           { required: true, message: "区域名称不能为空", trigger: "blur" },
-          {
-            validator: regionNameValidate,
-            required: true
-          }
+          { validator: regionNameValidate, trigger: "blur" }
         ]
       },
       downloadLoading: false
     };
-
   },
   computed: {
     headers() {
