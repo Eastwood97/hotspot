@@ -57,12 +57,8 @@
             :src="picURL+scope.row.captureFaceStorageUrl"
             width="80"
             preview="1"
-<<<<<<< Updated upstream
             preview-text="抓拍人脸"
           />
-=======
-            preview-text="抓拍人脸">
->>>>>>> Stashed changes
         </template>
       </el-table-column>
 
