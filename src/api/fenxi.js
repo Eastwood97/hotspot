@@ -2,10 +2,10 @@ import request from '@/utils/request'
 
 export function searchArea_device({ id }) {
   const param = {
-    id: id
+    regionId: id
   }
   return request({
-    url: '/fenxi/devicemessage',
+    url: '/device/getDevId',
     method: 'get',
     params: param
   })
@@ -13,7 +13,7 @@ export function searchArea_device({ id }) {
 
 export function searchAreaList() {
   return request({
-    url: '/fenxi/device',
+    url: '/region/getAll',
     method: 'get'
   })
 }

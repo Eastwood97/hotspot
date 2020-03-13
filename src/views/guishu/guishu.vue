@@ -21,7 +21,7 @@
             <el-option
               v-for="item in AreaOptions"
               :key="item.id"
-              :label="item.value"
+              :label="item.region_name"
               :value="item.id"
             />
           </el-select>
@@ -502,12 +502,13 @@ export default {
       this.AreaOptions = []
       searchAreaList().then((data) => {
         if (data && data.data) {
-          const json = data.data.data
+          console.log(data)
+          const json = data.data.data.list
           console.log(json)
           for (let i = 0; i < json.length; i++) {
             const param = {
-              id: json[i].devId,
-              value: json[i].devName
+              id: json[i].id,
+              value: json[i].region_name
             }
             this.AreaOptions.push(param)
           }
@@ -522,12 +523,11 @@ export default {
       const id = this.formSearch.area
       searchArea_device({ id }).then((data) => {
         if (data && data.data) {
-          var json = data.data.data
-          console.log(json)
+          var json = data.data.data.list
           for (let i = 0; i < json.length; i++) {
             const param = {
-              devId: json[i].devId,
-              value: json[i].value
+              devId: json[i].dev_id,
+              value: json[i].dev_name
             }
             this.DevIdOption.push(param)
           }
