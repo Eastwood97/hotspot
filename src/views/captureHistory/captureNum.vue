@@ -25,28 +25,15 @@
       style="margin-bottom: 10px;border: 1px;border-radius: 5px;border-style: solid;padding: 10px 0px 10px 0px;box-sizing:border-box;border-color: #EBEEF5;text-align: center;"
     >
       <el-row>
-        <!--        <el-col :span="3">-->
-        <!--          目标:-->
-        <!--          <el-select v-model="listQuery.groupId" placeholder="请选择" size="mini" style="width: 100px">-->
-        <!--            <el-option-->
-        <!--              v-for="item in options"-->
-        <!--              :key="item.value"-->
-        <!--              :label="item.label"-->
-        <!--              :value="item.value"-->
-        <!--              size="mini"/>-->
-        <!--          </el-select>-->
-        <!--        </el-col>-->
-        <el-col :span="3">
+
           设备号:
           <el-input
             v-model="listQuery.devId"
             style="width: 70px"
             size="mini"
-            width="10px"
             placeholder="设备号"
           />
-        </el-col>
-        <el-col :span="4">
+
           IMSI:
           <el-input
             v-model="listQuery.imsi"
@@ -54,8 +41,6 @@
             size="mini"
             placeholder="请输入IMSI"
           />
-        </el-col>
-        <el-col :span="4">
           IMEI:
           <el-input
             v-model="listQuery.imei"
@@ -63,29 +48,27 @@
             size="mini"
             placeholder="请输入IMEI"
           />
-        </el-col>
-        <el-col :span="4">
-          电话号码:
-          <el-input
-            v-model="listQuery.isdn"
-            style="width: 110px"
-            size="mini"
-            placeholder="请输入电话"
-          />
-        </el-col>
-        <el-col :span="5">
+<!--        <el-col :span="4">-->
+<!--          电话号码:-->
+<!--          <el-input-->
+<!--            v-model="listQuery.isdn"-->
+<!--            style="width: 110px"-->
+<!--            size="mini"-->
+<!--            placeholder="请输入电话"-->
+<!--          />-->
+<!--        </el-col>-->
           抓拍时间:
           <el-date-picker
-            v-model="listQuery.captureTime"
+            v-model="captureTime"
             :picker-options="pickerOptions"
             value-format="yyyy-MM-dd HH:mm:ss"
             size="mini"
-            style="width: 160px"
-            type="date">
-            placeholder="选择日期"/>
-          </el-date-picker>
-        </el-col>
-        <el-col :span="4" :offset="0" style="text-align: left;">
+            type="datetimerange"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            @change="chooseTimeRange"
+          />
           <el-button size="mini" @click="cancelSearch">取消</el-button>
           <el-button
             icon="el-icon-search"
@@ -94,7 +77,6 @@
             @click="handleFilter"
           >搜索
           </el-button>
-        </el-col>
       </el-row>
     </div>
     <!-- 查询结果 -->
@@ -107,13 +89,11 @@
       highlight-current-row
       @selection-change="handleSelectionChange">
       <el-table-column type="selection" min-width="50"/>
-      <el-table-column align="center" label="id" min-width="120px" prop="id"/>
-      <el-table-column align="center" label="设备号" min-width="110px" prop="dev_id"/>
+      <el-table-column type="index" :index="indexMethod" label="id" min-width="50"></el-table-column>
+      <el-table-column align="center" label="设备号" min-width="110px" prop="devId"/>
       <el-table-column align="center" label="imsi" min-width="180px" prop="imsi"/>
       <el-table-column align="center" label="imei" min-width="180px" prop="imei"/>
-      <!--      <el-table-column align="center" label="号码" width="180px" prop="isdn"/>-->
-      <!--      <el-table-column align="center" label="号码" width="180px" prop="isdn"/>-->
-      <el-table-column align="center" label="抓拍时间" min-width="180px" prop="capture_time"/>
+      <el-table-column align="center" label="抓拍时间" min-width="180px" prop="captureTime" />
       <el-table-column align="center" label="归属地" min-width="110px" prop="attribution"/>
       <el-table-column align="center" label="操作" min-width="145px" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -170,29 +150,35 @@ export default {
       advanceSearchViewVisible: false,
       uploadPath,
       pickerOptions: {
-        disabledDate(time) {
-          return time.getTime() > Date.now()
-        },
-        shortcuts: [{
-          text: '今天',
-          onClick(picker) {
-            picker.$emit('pick', new Date())
+        shortcuts: [
+          {
+            text: "最近一周",
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit("pick", [start, end]);
+            }
+          },
+          {
+            text: "最近一个月",
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              picker.$emit("pick", [start, end]);
+            }
+          },
+          {
+            text: "最近三个月",
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+              picker.$emit("pick", [start, end]);
+            }
           }
-        }, {
-          text: '昨天',
-          onClick(picker) {
-            const date = new Date()
-            date.setTime(date.getTime() - 3600 * 1000 * 24)
-            picker.$emit('pick', date)
-          }
-        }, {
-          text: '一周前',
-          onClick(picker) {
-            const date = new Date()
-            date.setTime(date.getTime() - 3600 * 1000 * 24 * 7)
-            picker.$emit('pick', date)
-          }
-        }]
+        ]
       },
       options: [{
         value: 0,
@@ -208,13 +194,15 @@ export default {
       list: [],
       total: 0,
       listLoading: true,
+      captureTime: null,
       listQuery: {
         groupId: 0,
         devId: '',
         imsi: '',
         imei: '',
         isdn: '',
-        captureTime: null,
+        startTime:'',
+        endTime:'',
         page: 1,
         row: 10
       },
@@ -253,10 +241,25 @@ export default {
     this.getList()
   },
   methods: {
+    indexMethod(index) {
+      return (this.listQuery.page - 1) * this.listQuery.row + index + 1;
+    },
+    // 监听时间变化
+    chooseTimeRange(t) {
+      console.log(t)
+      if (t != null) {
+        this.listQuery.startTime = t[0]
+        this.listQuery.endTime = t[1]
+      } else {
+        this.listQuery.startTime = ''
+        this.listQuery.endTime = ''
+      }
+    },
     getList() {
       this.listLoading = true
       getHotnumInfo(this.listQuery)
         .then(response => {
+          console.log(response)
           this.list = response.data.data.rows
           console.log(response)
           this.total = response.data.data.total
