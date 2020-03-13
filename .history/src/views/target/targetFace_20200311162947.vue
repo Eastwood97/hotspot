@@ -33,7 +33,8 @@
     >
       <el-table-column type="selection" width="55" />
 
-      <el-table-column align="center" label="ID" type="index" :index="indexMethod" />
+     <el-table-column align="center" type="index" :index="indexMethod" label="ID"  />
+
 
       <el-table-column align="center" label="目标名称" prop="targetName" />
 
@@ -216,7 +217,7 @@ export default {
       listLoading: true,
       listQuery: {
         page: 1,
-        limit: 20,
+        limit: 5,
         targetName: '',
         imsi: '',
         isdn: '',
@@ -343,9 +344,9 @@ export default {
         .then(response => {
           console.log(response.data)
 
-          this.list = response.data.data.list
+          this.list = response.data.data
 
-          this.total = response.data.data.total
+          this.total = response.data.data.size
           this.listLoading = false
         })
         .catch(() => {

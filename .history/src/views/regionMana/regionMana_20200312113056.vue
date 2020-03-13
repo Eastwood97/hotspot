@@ -157,9 +157,11 @@ export default {
       getRegionNameCount(regionName).then(res => {
         console.log(res);
         if (res.data.data <= 0) {
-          callback();
+          console.log("成功")
+          //callback();
         } else if (res.data.data > 0) {
-          callback("区域名称已经存在");
+          // callback("区域名称已经存在");
+          console.log("区域名称已经存在");
         } else {
           this.$notify.error({
             title: "失败",

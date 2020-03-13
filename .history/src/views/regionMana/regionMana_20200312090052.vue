@@ -51,8 +51,16 @@
 
       <el-table-column align="center" label="操作" width="200" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">编辑</el-button>
-          <el-button type="danger" size="mini" @click="deleteNumber(scope.row)">删除</el-button>
+          <el-button
+            type="primary"
+            size="mini"
+            @click="handleUpdate(scope.row)"
+          >编辑</el-button>
+          <el-button
+            type="danger"
+            size="mini"
+            @click="deleteNumber(scope.row)"
+          >删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -92,11 +100,11 @@
         <el-form-item label="区域名称" prop="regionName">
           <el-input v-model.trim="dataForm.regionName" />
         </el-form-item>
-        <el-form-item label="描述" prop="desc">
+         <el-form-item label="描述" prop="desc">
           <el-input v-model.trim="dataForm.desc" />
         </el-form-item>
 
-        <el-form-item label="启用">
+        <el-form-item  label="启用">
           <el-switch v-model="dataForm.state" :active-value="1" :inactive-value="0" />
         </el-form-item>
       </el-form>
@@ -140,8 +148,7 @@ import {
   listSubRegion,
   createRegion,
   updateRegion,
-  deleteRegion,
-  getRegionNameCount
+  deleteRegion
 } from "@/api/region";
 import { uploadPath } from "@/api/storage";
 import { getToken } from "@/utils/auth";
@@ -149,26 +156,6 @@ import Pagination from "@/components/Pagination"; // Secondary package based on 
 
 export default {
   data() {
-        //区域名校验
-    let regionNameValidate = (rule, value, callback) => {
-      //查询区域名是否重复
-      let regionName=value.trim();
-      console.log(regionName)
-      getRegionNameCount(regionName).then(res => {
-        console.log(res);
-        if (res.data.data <= 0) {
-          callback();
-        } else if (res.data.data > 0) {
-          callback("区域名称已经存在");
-        } else {
-          this.$notify.error({
-            title: "失败",
-            message: "区域名称查询重复失败！",
-            duration: 2000
-          });
-        }
-      }).catch((e) => {});
-    };
     return {
       multipleSelection: [],
 
@@ -195,15 +182,10 @@ export default {
       rules: {
         regionName: [
           { required: true, message: "区域名称不能为空", trigger: "blur" },
-          {
-            validator: regionNameValidate,
-            required: true
-          }
         ]
       },
       downloadLoading: false
     };
-
   },
   computed: {
     headers() {
@@ -263,27 +245,27 @@ export default {
       });
     },
     createRegion() {
-      this.$refs["dataForm"].validate(valid => {
+      this.$refs['dataForm'].validate(valid => {
         if (valid) {
           createRegion(this.dataForm)
             .then(response => {
-              this.list.unshift(response.data.data);
-              this.dialogFormVisible = false;
+              this.list.unshift(response.data.data)
+              this.dialogFormVisible = false
               this.$notify.success({
-                title: "成功",
-                message: "创建成功"
-              });
+                title: '成功',
+                message: '创建成功'
+              })
             })
             .catch(response => {
               this.$notify.error({
-                title: "失败",
-                message: "添加失败"
-              });
-            });
+                title: '失败',
+                message:"添加失败"
+              })
+            })
         }
-      });
+      })
     },
-
+  
     handleUpdate(row) {
       this.dataForm = Object.assign({}, row);
       this.dialogStatus = "update";
@@ -297,6 +279,7 @@ export default {
         if (valid) {
           // 加载中
           this.dialogFormVisible = false;
+         
 
           updateRegion(this.dataForm)
             .then(() => {
@@ -395,10 +378,10 @@ export default {
         })
         .catch(() => {});
     },
-
+    
     indexMethod(index) {
       return (this.listQuery.page - 1) * this.listQuery.limit + index + 1;
-    }
+    },
   }
 };
 </script>

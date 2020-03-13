@@ -156,10 +156,12 @@ export default {
       console.log(regionName)
       getRegionNameCount(regionName).then(res => {
         console.log(res);
-        if (res.data.data <= 0) {
-          callback();
-        } else if (res.data.data > 0) {
-          callback("区域名称已经存在");
+        if (res.rel && res.data.data <= 0) {
+          console.log("成功")
+          //callback();
+        } else if (res.rel && res.data.data > 0) {
+          // callback("区域名称已经存在");
+          console.log("区域名称已经存在");
         } else {
           this.$notify.error({
             title: "失败",
