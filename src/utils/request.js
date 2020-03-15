@@ -73,7 +73,7 @@ service.interceptors.response.use(
       return Promise.reject('error')
     } else if (res.errno !== 0) {
       // 非5xx的错误属于业务错误，留给具体页面处理
-      return Promise.reject(response)
+      return Promise.reject("登录超时")
     } else {
       return response
     }
