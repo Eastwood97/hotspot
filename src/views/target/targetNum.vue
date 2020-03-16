@@ -537,11 +537,13 @@ export default {
       var _this = this
       deleteTargetNum(targetIds).then(resp => {
         _this.tableLoading = false
-        if (resp && resp.status == 200) {
-          var data = resp.data
-          _this.$message({ type: 'success', message: data.errmsg })
-          _this.getList()
-        }
+         if (resp && resp.status == 200) {
+            this.$notify.success({
+              title: "成功",
+              message: "删除成功"
+            });
+            _this.getList();
+          }
       })
     },
     // 批量删除

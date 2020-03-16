@@ -141,6 +141,8 @@ img {
 <script>
 import { listResult, deleteResult } from '@/api/carCampare'
 import { getToken } from '@/utils/auth'
+import {picURL} from '@/api/picURL'
+
 
 export default {
   data() {
@@ -181,7 +183,6 @@ export default {
       multipleSelection: [],
       advanceSearchViewVisible: false,
 
-      picURL: 'http://192.168.2.14:9222/',
       count: 1,
       list: [],
       total: 0,

@@ -60,7 +60,7 @@
       >
         <template slot-scope="scope">
           <p v-if="scope.row.relatedResult.topOne">{{ scope.row.relatedResult.topOne.imsi }}</p>
-          <p v-if="scope.row.relatedResult.topOne">{{ scope.row.relatedResult.topOne.ratioTwo }}</p>
+          <p v-if="scope.row.relatedResult.topOne">{{ scope.row.relatedResult.topOne.ratio }}</p>
         </template>
       </el-table-column>
       <el-table-column
@@ -70,7 +70,7 @@
       >
         <template slot-scope="scope">
           <p v-if="scope.row.relatedResult.topTwo">{{ scope.row.relatedResult.topTwo.imsi }}</p>
-           <p v-if="scope.row.relatedResult.topTwo">{{ scope.row.relatedResult.topTwo.ratioTwo }}</p>
+           <p v-if="scope.row.relatedResult.topTwo">{{ scope.row.relatedResult.topTwo.ratio }}</p>
         </template>
       </el-table-column>
       <el-table-column
@@ -80,7 +80,7 @@
       >
         <template slot-scope="scope">
           <p v-if="scope.row.relatedResult.topThree">{{ scope.row.relatedResult.topThree.imsi }}</p>
-           <p v-if="scope.row.relatedResult.topThree">{{ scope.row.relatedResult.topThree.ratioTwo }}</p>
+           <p v-if="scope.row.relatedResult.topThree">{{ scope.row.relatedResult.topThree.ratio }}</p>
         </template>
       </el-table-column>
 

@@ -157,7 +157,6 @@
           <el-select v-model="dataForm.devType" placeholder="请选设备类型">
             <el-option label="摄像头" value="1" />
             <el-option label="热点" value="2" />
-            <el-option label="超脑" value="3" />
           </el-select>
         </el-form-item>
 
@@ -240,7 +239,7 @@ import {
   updateDevice,
   deleteDevice
 } from "@/api/device";
-import {listAllRegion} from "@/api/region";
+import { listAllRegion } from "@/api/region";
 import { uploadPath } from "@/api/storage";
 import { getToken } from "@/utils/auth";
 import Pagination from "@/components/Pagination"; // Secondary package based on el-pagination
@@ -248,9 +247,8 @@ import Pagination from "@/components/Pagination"; // Secondary package based on 
 export default {
   data() {
     return {
-       options: [],
+      options: [],
 
-     
       multipleSelection: [],
       advanceSearchViewVisible: false,
 
@@ -275,7 +273,7 @@ export default {
         port: "",
         isRegister: "",
         groupId: undefined,
-        regionId:undefined,
+        regionId: undefined
       },
       dialogFormVisible: false,
       dialogStatus: "",
@@ -345,12 +343,10 @@ export default {
     this.getList();
   },
   methods: {
-
-    getRegion(){
-        listAllRegion()
-        .then(response =>{
-          this.options=response.data.data.list
-        })
+    getRegion() {
+      listAllRegion().then(response => {
+        this.options = response.data.data.list;
+      });
     },
     getList() {
       this.listLoading = true;
@@ -394,7 +390,7 @@ export default {
         port: "",
         description: "",
         groupId: undefined,
-        regionId:undefined,
+        regionId: undefined
       };
     },
     handleCreate() {
@@ -409,17 +405,19 @@ export default {
     createData() {
       this.$refs["dataForm"].validate(valid => {
         if (valid) {
-          // 加载中
-          this.dialogFormVisible = false;
-          const loading = this.$loading({
-            lock: true,
-            text: "注册超脑中",
-            spinner: "el-icon-loading",
-            background: "rgba(0, 0, 0, 0.7)"
-          });
-          setTimeout(() => {
-            loading.close();
-          }, 5000);
+          if (this.dataForm.devType == 1&&this.dataForm.isRegister==1) {
+            // 加载中
+            this.dialogFormVisible = false;
+            const loading = this.$loading({
+              lock: true,
+              text: "注册超脑中",
+              spinner: "el-icon-loading",
+              background: "rgba(0, 0, 0, 0.7)"
+            });
+            setTimeout(() => {
+              loading.close();
+            }, 5000);
+          }
 
           createDevice(this.dataForm)
             .then(response => {
@@ -446,20 +444,22 @@ export default {
         this.$refs["dataForm"].clearValidate();
       });
     },
-    updateData() {
+    updateData(row) {
       this.$refs["dataForm"].validate(valid => {
         if (valid) {
-          // 加载中
-          this.dialogFormVisible = false;
-          const loading = this.$loading({
-            lock: true,
-            text: "注册超脑中",
-            spinner: "el-icon-loading",
-            background: "rgba(0, 0, 0, 0.7)"
-          });
-          setTimeout(() => {
-            loading.close();
-          }, 4000);
+          if (this.dataForm.devType == 1&&this.dataForm.isRegister==1&&row.isRegister==0) {
+            // 加载中
+            this.dialogFormVisible = false;
+            const loading = this.$loading({
+              lock: true,
+              text: "注册超脑中",
+              spinner: "el-icon-loading",
+              background: "rgba(0, 0, 0, 0.7)"
+            });
+            setTimeout(() => {
+              loading.close();
+            }, 5000);
+          }
 
           updateDevice(this.dataForm)
             .then(() => {
@@ -619,9 +619,9 @@ export default {
         })
         .catch(() => {});
     },
-      indexMethod(index) {
+    indexMethod(index) {
       return (this.listQuery.page - 1) * this.listQuery.limit + index + 1;
-    },
+    }
   }
 };
 </script>
