@@ -14,27 +14,27 @@
           <screenfull class="screenfull right-menu-item" />
         </el-tooltip>
 
-        <el-tooltip content="布局大小" effect="dark" placement="bottom">
-          <size-select class="international right-menu-item" />
-        </el-tooltip>
+<!--        <el-tooltip content="布局大小" effect="dark" placement="bottom">-->
+<!--          <size-select class="international right-menu-item" />-->
+<!--        </el-tooltip>-->
       </template>
 
       <el-dropdown class="avatar-container right-menu-item" trigger="click">
         <div class="avatar-wrapper">
-          <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar" >
+          <img src="/static/img/police.png" class="user-avatar" >
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
-          <router-link to="/">
-            <el-dropdown-item>首页</el-dropdown-item>
-          </router-link>
-          <el-dropdown-item divided>
-            <a target="_blank" href="https://github.com/linlinjava/litemall">GitHub</a>
-          </el-dropdown-item>
+<!--          <router-link to="/">-->
+<!--            <el-dropdown-item>首页</el-dropdown-item>-->
+<!--          </router-link>-->
+<!--          <el-dropdown-item divided>-->
+<!--            <a target="_blank" href="https://github.com/linlinjava/litemall">GitHub</a>-->
+<!--          </el-dropdown-item>-->
+<!--          <el-dropdown-item>-->
+<!--            <a target="_blank" href="https://gitee.com/linlinjava/litemall">码云</a>-->
+<!--          </el-dropdown-item>-->
           <el-dropdown-item>
-            <a target="_blank" href="https://gitee.com/linlinjava/litemall">码云</a>
-          </el-dropdown-item>
-          <el-dropdown-item divided>
             <router-link to="/profile/password">密码修改</router-link>
           </el-dropdown-item>
           <el-dropdown-item divided>
@@ -69,7 +69,7 @@ export default {
   mounted() {
    // console.log("----------------+++++++++++++" + getToken());
     const userName = 'admin123'
-   
+
    // var permission = window['permission'];
    // console.log("----------------------:" + permission)
     // WebSocket
@@ -203,7 +203,8 @@ export default {
         .user-avatar {
           width: 40px;
           height: 40px;
-          border-radius: 10px;
+          border: 1px solid #b7b7b7;
+          border-radius: 50%;
         }
         .el-icon-caret-bottom {
           position: absolute;

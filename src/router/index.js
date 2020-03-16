@@ -87,7 +87,7 @@ export const asyncRouterMap = [
     name: 'targetManage',
     meta: {
       title: '布控管理',
-      icon: 'list'
+      icon: 'size'
     },
     children: [
       {
@@ -132,7 +132,7 @@ export const asyncRouterMap = [
     roles: ['user'],
     meta: {
       title: '捕获历史',
-      icon: 'list'
+      icon: 'table'
     },
     children: [
       {
@@ -176,7 +176,7 @@ export const asyncRouterMap = [
     name: 'targetManage',
     meta: {
       title: '比对结果',
-      icon: 'list'
+      icon: 'nested'
     },
     children: [
       {
@@ -315,7 +315,7 @@ export const asyncRouterMap = [
         path: 'device',
         component: () => import('@/views/devmana/device'),
         name: 'device',
-        meta: { title: '设备管理', icon: 'dashboard', noCache: true }
+        meta: { title: '设备管理', icon: 'icon', noCache: true }
       }
     ]
   },
@@ -328,7 +328,7 @@ export const asyncRouterMap = [
         path: 'device',
         component: () => import('@/views/regionMana/regionMana'),
         name: 'device',
-        meta: { title: '区域管理', icon: 'dashboard', noCache: true }
+        meta: { title: '区域管理', icon: 'international', noCache: true }
       }
     ]
   },
@@ -341,7 +341,7 @@ export const asyncRouterMap = [
     name: 'sysManage',
     meta: {
       title: '系统管理',
-      icon: 'chart'
+      icon: '系统'
     },
     children: [
       {
