@@ -28,14 +28,14 @@
         IMSI:
         <el-input
           v-model="listQuery.imsi"
-          style="width: 130px"
+          style="width: 170px"
           size="mini"
           placeholder="请输入IMSI"
         />
         IMEI:
         <el-input
           v-model="listQuery.imei"
-          style="width: 130px"
+          style="width: 170px"
           size="mini"
           placeholder="请输入IMEI"
         />

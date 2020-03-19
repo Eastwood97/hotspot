@@ -315,7 +315,7 @@ export const asyncRouterMap = [
         path: 'device',
         component: () => import('@/views/devmana/device'),
         name: 'device',
-        meta: { title: '设备管理', icon: 'icon', noCache: true }
+        meta: { title: '设备管理', icon: '设备', noCache: true }
       }
     ]
   },

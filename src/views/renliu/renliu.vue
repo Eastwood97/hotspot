@@ -21,7 +21,7 @@
             <el-option
               v-for="item in AreaOptions"
               :key="item.id"
-              :label="item.region_name"
+              :label="item.value"
               :value="item.id"
             />
           </el-select>
@@ -66,16 +66,6 @@
     <el-row>
       <el-col :span="24">
         <div ref="eCharts1" class="context-div"/>
-      </el-col>
-    </el-row>
-    <el-row>
-      <el-col :span="24">
-        <div ref="eCharts2" class="context-div"/>
-      </el-col>
-    </el-row>
-    <el-row>
-      <el-col :span="24">
-        <div ref="eCharts3" class="context-div"/>
       </el-col>
     </el-row>
   </div>
@@ -303,7 +293,7 @@ export default {
           for (let i = 0; i < json.length; i++) {
             const param = {
               id: json[i].id,
-              value: json[i].region_name
+              value: json[i].regionName
             }
             this.AreaOptions.push(param)
           }

@@ -31,3 +31,11 @@ export function searchCountry(data) {
     data
   })
 }
+export function searchguishu(param) {
+  return request({
+    url: '/fenxi/getGuiShuiDiList',
+    method: 'get',
+    params: param
+  })
+}
+

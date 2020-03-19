@@ -21,7 +21,7 @@
             <el-option
               v-for="item in AreaOptions"
               :key="item.id"
-              :label="item.region_name"
+              :label="item.value"
               :value="item.id"
             />
           </el-select>
@@ -78,6 +78,38 @@
         <div ref="eCharts3" class="context-div"/>
       </el-col>
     </el-row>
+    <el-dialog :title="guishuText" :visible.sync="dialogTableVisible">
+      <div style="margin-top: -30px">
+        <el-input
+          v-model="imsi"
+          style="width:200px;"
+          size="mini"
+          placeholder="imsi"
+        />
+        <el-button
+          icon="el-icon-search"
+          type="primary"
+          size="mini"
+          @click="handleFilter"
+        >搜索
+        </el-button>
+      </div>
+      <el-table :data="rowsList" style="margin-top: 0px">
+        <el-table-column property="attribution" label="归属地"></el-table-column>
+        <el-table-column property="imsi" label="imsi"></el-table-column>
+        <el-table-column property="imei" label="imei"></el-table-column>
+        <el-table-column property="capture_time" label="捕获时间"></el-table-column>
+      </el-table>
+      <el-pagination
+        align="right"
+        style="margin-top: 10px"
+        @current-change="handleCurrentChange"
+        :page.sync="page"
+        :page-size="row"
+        layout="total, prev, pager, next"
+        :total="total">
+      </el-pagination>
+    </el-dialog>
   </div>
 </template>
 <style>
@@ -88,6 +120,7 @@
     position: relative;
     overflow: hidden;
   }
+
   .context-div {
     width: 100%;
     height: 300px;
@@ -97,443 +130,496 @@
     border-top: 1px dashed #e7eaec;
     margin: 20px 0;
   }
+
   .avatar-uploader .el-upload:hover {
     border-color: #20a0ff;
   }
 
 </style>
 <script>
-import { searchArea_device, searchAreaList, searchCountry } from '@/api/fenxi'
-export default {
-  name: 'Admin',
-  data() {
-    return {
-      formSearch: { // 表单查询
-        area: '',
-        devId: '',
-        createTime: ''
-      },
-      Data: [],
-      labelPosition: 'left', // lable对齐方式
-      AreaOptions: [],
-      DevIdOption: [],
-      values: '',
-      pickerOptions: {
-        disabledDate(time) {
-          return time.getTime() > Date.now()  - 24 * 60 * 60 * 1000;
-        },
-        shortcuts: [
-          {
-            text: '所有',
-            onClick(picker) {
-              const end = new Date(new Date().getTime()-1000*60*60*24)
-              const start = new Date()
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 5000)
-              picker.$emit('pick', [start, end])
-            }
-          }, {
-            text: '最近一周',
-            onClick(picker) {
-              const end = new Date(new Date().getTime()-1000*60*60*24)
-              const start = new Date()
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
-              picker.$emit('pick', [start, end])
-            }
-          }, {
-            text: '最近一个月',
-            onClick(picker) {
-              const end = new Date(new Date().getTime()-1000*60*60*24)
-              const start = new Date()
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
-              picker.$emit('pick', [start, end])
-            }
-          }, {
-            text: '最近三个月',
-            onClick(picker) {
-              const end = new Date(new Date().getTime()-1000*60*60*24)
-              const start = new Date()
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
-              picker.$emit('pick', [start, end])
-            }
-          }]
-      },
-      value1: [new Date(2000, 10, 10, 10, 10), new Date(2000, 10, 11, 10, 10)],
-      value2: '',
-      GJData: [],
-      GuoBie: ['国内', '国外'],
-      GeGuo: []
-    }
-  },
-  computed: {
-    headers() {
+  import { searchArea_device, searchAreaList, searchCountry, searchguishu } from '@/api/fenxi'
+
+  export default {
+    name: 'Admin',
+    data() {
       return {
-        'X-Litemall-Admin-Token': getToken()
+        guishuText: '',
+        formSearch: { // 表单查询
+          area: '',
+          devId: '',
+          createTime: ''
+        },
+        Data: [],
+        page: 1,
+        row: 5,
+        total: '',
+        imsi: '',
+        dialogTableVisible: false,
+        labelPosition: 'left', // lable对齐方式
+        AreaOptions: [],
+        DevIdOption: [],
+        values: '',
+        pickerOptions: {
+          disabledDate(time) {
+            return time.getTime() > Date.now() - 24 * 60 * 60 * 1000
+          },
+          shortcuts: [
+            {
+              text: '所有',
+              onClick(picker) {
+                const end = new Date(new Date().getTime() - 1000 * 60 * 60 * 24)
+                const start = new Date()
+                start.setTime(start.getTime() - 3600 * 1000 * 24 * 5000)
+                picker.$emit('pick', [start, end])
+              }
+            }, {
+              text: '最近一周',
+              onClick(picker) {
+                const end = new Date(new Date().getTime() - 1000 * 60 * 60 * 24)
+                const start = new Date()
+                start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+                picker.$emit('pick', [start, end])
+              }
+            }, {
+              text: '最近一个月',
+              onClick(picker) {
+                const end = new Date(new Date().getTime() - 1000 * 60 * 60 * 24)
+                const start = new Date()
+                start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+                picker.$emit('pick', [start, end])
+              }
+            }, {
+              text: '最近三个月',
+              onClick(picker) {
+                const end = new Date(new Date().getTime() - 1000 * 60 * 60 * 24)
+                const start = new Date()
+                start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+                picker.$emit('pick', [start, end])
+              }
+            }]
+        },
+        value1: [new Date(2000, 10, 10, 10, 10), new Date(2000, 10, 11, 10, 10)],
+        value2: '',
+        GJData: [],
+        GuoBie: ['国内', '国外'],
+        GeGuo: [],
+        rowsList: [],
+        param: null,
+        params: null
       }
-    }
-  },
-  created() {
-    this.searchArea()
-  },
-  methods: {
-    search() {
-      if (this.formSearch.area == '') {
-        this.$message({
-          message: '请选择区域',
-          type: 'error'
-        })
-        return
-      }
-      console.log(this.formSearch.devId)
-      if (this.formSearch.devId == null) {
-        this.$message({
-          message: '请选择设备',
-          type: 'error'
-        })
-        return
-      }
-      if (this.formSearch.createTime == '') {
-        this.$message({
-          message: '请选择时间',
-          type: 'error'
-        })
-        return
-      }
-      const param = Object.assign({}, this.formSearch)
-      console.log(param)
-      searchCountry(param).then((data) => {
-        if (data && data.data) {
-          this.Data = []
-          this.GJData = []
-          this.GeGuo = []
-          const json = data.data.data
-          console.log(json)
-          for (var i = 0; i < json.guoBieList.length; i++) {
-            this.Data.push({ value: json.guoBieList[i].num, name: json.guoBieList[i].attribution })
-          }
-          console.log(json)
-          for (var i = 0; i < json.GuojiCountList.length; i++) {
-            this.GJData.push({ value: json.GuojiCountList[i].num, name: json.GuojiCountList[i].country })
-          }
-          this.GeGuo.push({ value: json.MyGuoCount.num, name: '中国' })
-          for (var i = 0; i < json.GuoWaiGeGuoCount.length; i++) {
-            this.GeGuo.push({ value: json.GuoWaiGeGuoCount[i].num, name: json.GuoWaiGeGuoCount[i].country })
-          }
-          this.drawPie1()
-          this.drawPie2()
-          this.drawPie3()
-        }
-      }).catch((err) => {
-        this.listLoading = false
-        this.$message({ message: '查询异常，请重试', type: 'error' })
-      })
     },
-    drawPie1() {
-      const myChart = new echarts.init(this.$refs.eCharts1)
-      const option = {
-        title: {
-          text: '国内各省份比例',
-          x: 'left',
-          color: '#565050'
-        },
-        grid: {
-          bottom: '1%',
-          containLabel: true
-        },
-        legend: {
-          top: '10%',
-          orient: 'vertical',
-          x: 'left'
-        },
-        color: ['#37a2da', '#32c5e9', '#3bc26b', '#87681F', '#c96c4c', '#fb7293', '#a33ebf', '#8378ea', '#ea02a2', '#ea7c30'],
-        tooltip: {
-          trigger: 'item',
-          formatter: '{a} <br/>{b} : {c} ({d}%)'
-        },
-        toolbox: {
-          left: 'right',
-          top: 'center',
-          orient: 'vertical',
-          show: true,
-          feature: {
-            mark: {
-              show: true
-            },
-            dataView: {
-              show: true,
-              readOnly: false
-            },
-            magicType: {
-              show: true,
-              type: ['pie', 'funnel']
-            },
-            restore: {
-              show: true
-            },
-            saveAsImage: {
-              show: true
+    computed: {
+      headers() {
+        return {
+          'X-Litemall-Admin-Token': getToken()
+        }
+      }
+    },
+    created() {
+      this.searchArea()
+    },
+    methods: {
+      handleSizeChange(val) {
+        console.log(`每页 ${val} 条`)
+      },
+      handleCurrentChange(val) {
+        this.page = val
+        this.eConsole()
+      },
+      search() {
+        if (this.formSearch.area == '') {
+          this.$message({
+            message: '请选择区域',
+            type: 'error'
+          })
+          return
+        }
+        console.log(this.formSearch.devId)
+        if (this.formSearch.devId == null) {
+          this.$message({
+            message: '请选择设备',
+            type: 'error'
+          })
+          return
+        }
+        if (this.formSearch.createTime == '') {
+          this.$message({
+            message: '请选择时间',
+            type: 'error'
+          })
+          return
+        }
+        const param = Object.assign({}, this.formSearch)
+        console.log(param)
+        searchCountry(param).then((data) => {
+          if (data && data.data) {
+            this.Data = []
+            this.GJData = []
+            this.GeGuo = []
+            const json = data.data.data
+            console.log(json)
+            for (var i = 0; i < json.guoBieList.length; i++) {
+              this.Data.push({ value: json.guoBieList[i].num, name: json.guoBieList[i].attribution })
             }
+            console.log(json)
+            for (var i = 0; i < json.GuojiCountList.length; i++) {
+              this.GJData.push({ value: json.GuojiCountList[i].num, name: json.GuojiCountList[i].country })
+            }
+            this.GeGuo.push({ value: json.MyGuoCount.num, name: '中国' })
+            for (var i = 0; i < json.GuoWaiGeGuoCount.length; i++) {
+              this.GeGuo.push({ value: json.GuoWaiGeGuoCount[i].num, name: json.GuoWaiGeGuoCount[i].country })
+            }
+            this.drawPie1()
+            this.drawPie2()
+            this.drawPie3()
           }
-        },
-        calculable: true,
-        series: [{
-          name: '归属地业务统计表',
-          label: {
-            normal: {
-              formatter: '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c}  {per|{d}%}  ',
-              backgroundColor: '#eee',
-              borderColor: '#aaa',
-              borderWidth: 1,
-              borderRadius: 4,
-              rich: {
-                a: {
-                  color: '#454343',
-                  lineHeight: 22,
-                  align: 'center'
-                },
-                hr: {
-                  borderColor: '#aaa',
-                  width: '100%',
-                  borderWidth: 0.5,
-                  height: 0
-                },
-                b: {
-                  fontSize: 14,
-                  lineHeight: 20
-                },
-                per: {
-                  color: '#ffffff',
-                  backgroundColor: '#000000',
-                  padding: [2, 4],
-                  borderRadius: 2
-                }
+        }).catch((err) => {
+          this.listLoading = false
+          this.$message({ message: '查询异常，请重试', type: 'error' })
+        })
+      },
+      drawPie1() {
+        const myChart = new echarts.init(this.$refs.eCharts1)
+        const option = {
+          title: {
+            text: '国内各省份比例',
+            x: 'left',
+            color: '#565050'
+          },
+          grid: {
+            bottom: '1%',
+            containLabel: true
+          },
+          legend: {
+            top: '10%',
+            orient: 'vertical',
+            x: 'left'
+          },
+          color: ['#37a2da', '#32c5e9', '#3bc26b', '#87681F', '#c96c4c', '#fb7293', '#a33ebf', '#8378ea', '#ea02a2', '#ea7c30'],
+          tooltip: {
+            trigger: 'item',
+            formatter: '{a} <br/>{b} : {c} ({d}%)'
+          },
+          toolbox: {
+            left: 'right',
+            top: 'center',
+            orient: 'vertical',
+            show: true,
+            feature: {
+              mark: {
+                show: true
+              },
+              dataView: {
+                show: true,
+                readOnly: false
+              },
+              magicType: {
+                show: true,
+                type: ['pie', 'funnel']
+              },
+              restore: {
+                show: true
+              },
+              saveAsImage: {
+                show: true
               }
             }
           },
-          type: 'pie',
-          roseType: 'radius',
-          radius: [15, 95],
-          center: ['50%', '50%'],
-          data: this.Data,
-          animationEasing: 'cubicInOut',
-          animationDuration: 2000
-        }]
-      }
-      myChart.setOption(option)
-    },
-    drawPie2() {
-      const myChart = new echarts.init(this.$refs.eCharts2)
-      const option = {
-        title: {
-          text: '各国比例',
-          x: 'left'
-        },
-        legend: {
-          top: '10%',
-          orient: 'vertical',
-          x: 'left'
-        },
-        color: ['#37a2da', '#32c5e9', '#9fe6b8', '#ffdb5c', '#ff9f7f', '#fb7293', '#e7bcf3', '#8378ea'],
-        tooltip: {
-          trigger: 'item',
-          formatter: '{a} <br/>{b} : {c} ({d}%)'
-        },
-        toolbox: {
-          show: true,
-          left: 'right',
-          top: 'center',
-          orient: 'vertical',
-          feature: {
-            mark: {
-              show: true
-            },
-            dataView: {
-              show: true,
-              readOnly: false
-            },
-            magicType: {
-              show: true,
-              type: ['pie', 'funnel']
-            },
-            restore: {
-              show: true
-            },
-            saveAsImage: {
-              show: true
-            }
-          }
-        },
-        calculable: true,
-        series: [{
-          name: '归属地业务统计表',
-          label: {
-            normal: {
-              formatter: '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c}  {per|{d}%}  ',
-              backgroundColor: '#eee',
-              borderColor: '#aaa',
-              borderWidth: 1,
-              borderRadius: 4,
-              rich: {
-                a: {
-                  color: '#454343',
-                  lineHeight: 22,
-                  align: 'center'
-                },
-                hr: {
-                  borderColor: '#aaa',
-                  width: '100%',
-                  borderWidth: 0.5,
-                  height: 0
-                },
-                b: {
-                  fontSize: 16,
-                  lineHeight: 20
-                },
-                per: {
-                  color: '#ffffff',
-                  backgroundColor: '#000000',
-                  padding: [2, 4],
-                  borderRadius: 2
+          calculable: true,
+          series: [{
+            name: '归属地业务统计表',
+            label: {
+              normal: {
+                formatter: '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c}  {per|{d}%}  ',
+                backgroundColor: '#eee',
+                borderColor: '#aaa',
+                borderWidth: 1,
+                borderRadius: 4,
+                rich: {
+                  a: {
+                    color: '#454343',
+                    lineHeight: 22,
+                    align: 'center'
+                  },
+                  hr: {
+                    borderColor: '#aaa',
+                    width: '100%',
+                    borderWidth: 0.5,
+                    height: 0
+                  },
+                  b: {
+                    fontSize: 14,
+                    lineHeight: 20
+                  },
+                  per: {
+                    color: '#ffffff',
+                    backgroundColor: '#000000',
+                    padding: [2, 4],
+                    borderRadius: 2
+                  }
                 }
+              }
+            },
+            type: 'pie',
+            roseType: 'radius',
+            radius: [15, 95],
+            center: ['50%', '50%'],
+            data: this.Data,
+            animationEasing: 'cubicInOut',
+            animationDuration: 2000
+          }]
+        }
+        myChart.setOption(option)
+        myChart.on('click', this.eConsole)
+      },
+      handleFilter(){
+        this.eConsole()
+      },
+      eConsole(params) {
+        if (params != null) {
+          this.params = params
+          this.page=1
+        }
+        if (this.page != 1) {
+          this.param.page = this.page
+        } else {
+          console.log(this.params)
+          this.param = {
+            guishu: this.params.name,
+            page: this.page,
+            row: this.row,
+            imsi: this.imsi
+          }
+        }
+        searchguishu(this.param).then((data) => {
+          if (data && data.data) {
+            console.log(data.data)
+            this.rowsList = data.data.data.rows
+            this.total = data.data.data.total
+          }
+        }).catch((err) => {
+          this.listLoading = false
+          this.$message({ message: '查询异常，请重试', type: 'error' })
+        })
+        this.dialogTableVisible = true
+        this.guishuText = this.params.name
+      },
+      drawPie2() {
+        const myChart = new echarts.init(this.$refs.eCharts2)
+        const option = {
+          title: {
+            text: '各国比例',
+            x: 'left'
+          },
+          legend: {
+            top: '10%',
+            orient: 'vertical',
+            x: 'left'
+          },
+          color: ['#37a2da', '#32c5e9', '#9fe6b8', '#ffdb5c', '#ff9f7f', '#fb7293', '#e7bcf3', '#8378ea'],
+          tooltip: {
+            trigger: 'item',
+            formatter: '{a} <br/>{b} : {c} ({d}%)'
+          },
+          toolbox: {
+            show: true,
+            left: 'right',
+            top: 'center',
+            orient: 'vertical',
+            feature: {
+              mark: {
+                show: true
+              },
+              dataView: {
+                show: true,
+                readOnly: false
+              },
+              magicType: {
+                show: true,
+                type: ['pie', 'funnel']
+              },
+              restore: {
+                show: true
+              },
+              saveAsImage: {
+                show: true
               }
             }
           },
-          type: 'pie',
-          roseType: 'radius',
-          radius: [15, 95],
-          center: ['50%', '50%'],
-          data: this.GeGuo,
-          animationEasing: 'cubicInOut',
-          animationDuration: 2000
-        }]
-      }
-      myChart.setOption(option)
-    },
-    drawPie3() {
-      const myChart = new echarts.init(this.$refs.eCharts3)
-      const option = {
-        title: {
-          text: '国内、国外对比',
-          x: 'left'
-        },
-        legend: {
-          top: '10%',
-          orient: 'vertical',
-          x: 'left',
-          data: ['国内', '国外']
-        },
-        color: ['#FB7293', '#FF9F7F'],
-        tooltip: {
-          trigger: 'item',
-          formatter: '{a} <br/>{b} : {c} ({d}%)'
-        },
-        toolbox: {
-          left: 'right',
-          top: 'center',
-          orient: 'vertical',
-          show: true,
-          feature: {
-            mark: {
-              show: true
-            },
-            dataView: {
-              show: true,
-              readOnly: false
-            },
-            magicType: {
-              show: true,
-              type: ['pie', 'funnel']
-            },
-            restore: {
-              show: true
-            },
-            saveAsImage: {
-              show: true
-            }
-          }
-        },
-        calculable: true,
-        series: [{
-          avoidLabelOverlap: true, // 对，就是这里avoidLabelOverlap
-          name: '归属地业务统计表',
-          label: {
-            normal: {
-              formatter: '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c}  {per|{d}%}  ',
-              backgroundColor: '#eee',
-              borderColor: '#aaa',
-              borderWidth: 1,
-              borderRadius: 4,
-              rich: {
-                a: {
-                  color: '#454343',
-                  lineHeight: 22,
-                  align: 'center'
-                },
-                hr: {
-                  borderColor: '#aaa',
-                  width: '100%',
-                  borderWidth: 0.5,
-                  height: 0
-                },
-                b: {
-                  fontSize: 16,
-                  lineHeight: 20
-                },
-                per: {
-                  color: '#ffffff',
-                  backgroundColor: '#000000',
-                  padding: [2, 4],
-                  borderRadius: 2
+          calculable: true,
+          series: [{
+            name: '归属地业务统计表',
+            label: {
+              normal: {
+                formatter: '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c}  {per|{d}%}  ',
+                backgroundColor: '#eee',
+                borderColor: '#aaa',
+                borderWidth: 1,
+                borderRadius: 4,
+                rich: {
+                  a: {
+                    color: '#454343',
+                    lineHeight: 22,
+                    align: 'center'
+                  },
+                  hr: {
+                    borderColor: '#aaa',
+                    width: '100%',
+                    borderWidth: 0.5,
+                    height: 0
+                  },
+                  b: {
+                    fontSize: 16,
+                    lineHeight: 20
+                  },
+                  per: {
+                    color: '#ffffff',
+                    backgroundColor: '#000000',
+                    padding: [2, 4],
+                    borderRadius: 2
+                  }
                 }
+              }
+            },
+            type: 'pie',
+            roseType: 'radius',
+            radius: [15, 95],
+            center: ['50%', '50%'],
+            data: this.GeGuo,
+            animationEasing: 'cubicInOut',
+            animationDuration: 2000
+          }]
+        }
+        myChart.setOption(option)
+        myChart.on('click', this.eConsole)
+      },
+      drawPie3() {
+        const myChart = new echarts.init(this.$refs.eCharts3)
+        const option = {
+          title: {
+            text: '国内、国外对比',
+            x: 'left'
+          },
+          legend: {
+            top: '10%',
+            orient: 'vertical',
+            x: 'left',
+            data: ['国内', '国外']
+          },
+          color: ['#FB7293', '#FF9F7F'],
+          tooltip: {
+            trigger: 'item',
+            formatter: '{a} <br/>{b} : {c} ({d}%)'
+          },
+          toolbox: {
+            left: 'right',
+            top: 'center',
+            orient: 'vertical',
+            show: true,
+            feature: {
+              mark: {
+                show: true
+              },
+              dataView: {
+                show: true,
+                readOnly: false
+              },
+              magicType: {
+                show: true,
+                type: ['pie', 'funnel']
+              },
+              restore: {
+                show: true
+              },
+              saveAsImage: {
+                show: true
               }
             }
           },
-          type: 'pie',
-          roseType: 'radius',
-          radius: [15, 95],
-          center: ['50%', '50%'],
-          data: this.GJData,
-          animationEasing: 'cubicInOut',
-          animationDuration: 2000
-        }]
+          calculable: true,
+          series: [{
+            avoidLabelOverlap: true, // 对，就是这里avoidLabelOverlap
+            name: '归属地业务统计表',
+            label: {
+              normal: {
+                formatter: '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c}  {per|{d}%}  ',
+                backgroundColor: '#eee',
+                borderColor: '#aaa',
+                borderWidth: 1,
+                borderRadius: 4,
+                rich: {
+                  a: {
+                    color: '#454343',
+                    lineHeight: 22,
+                    align: 'center'
+                  },
+                  hr: {
+                    borderColor: '#aaa',
+                    width: '100%',
+                    borderWidth: 0.5,
+                    height: 0
+                  },
+                  b: {
+                    fontSize: 16,
+                    lineHeight: 20
+                  },
+                  per: {
+                    color: '#ffffff',
+                    backgroundColor: '#000000',
+                    padding: [2, 4],
+                    borderRadius: 2
+                  }
+                }
+              }
+            },
+            type: 'pie',
+            roseType: 'radius',
+            radius: [15, 95],
+            center: ['50%', '50%'],
+            data: this.GJData,
+            animationEasing: 'cubicInOut',
+            animationDuration: 2000
+          }]
+        }
+        myChart.setOption(option)
+      },
+      searchArea() {
+        this.AreaOptions = []
+        searchAreaList().then((data) => {
+          if (data && data.data) {
+            console.log(data)
+            const json = data.data.data.list
+            console.log(json)
+            for (let i = 0; i < json.length; i++) {
+              console.log(json[i].regionName)
+              const param = {
+                id: json[i].id,
+                value: json[i].regionName
+              }
+              this.AreaOptions.push(param)
+            }
+          }
+        }).catch((err) => {
+          this.$message({ message: '查询异常，请重试', type: 'error' })
+        })
+      },
+      changeArea() {
+        this.DevIdOption = []
+        this.formSearch.devId = null
+        const id = this.formSearch.area
+        searchArea_device({ id }).then((data) => {
+          if (data && data.data) {
+            var json = data.data.data.list
+            for (let i = 0; i < json.length; i++) {
+              const param = {
+                devId: json[i].dev_id,
+                value: json[i].dev_name
+              }
+              this.DevIdOption.push(param)
+            }
+          }
+        })
       }
-      myChart.setOption(option)
-    },
-    searchArea() {
-      this.AreaOptions = []
-      searchAreaList().then((data) => {
-        if (data && data.data) {
-          console.log(data)
-          const json = data.data.data.list
-          console.log(json)
-          for (let i = 0; i < json.length; i++) {
-            const param = {
-              id: json[i].id,
-              value: json[i].region_name
-            }
-            this.AreaOptions.push(param)
-          }
-        }
-      }).catch((err) => {
-        this.$message({ message: '查询异常，请重试', type: 'error' })
-      })
-    },
-    changeArea() {
-      this.DevIdOption = []
-      this.formSearch.devId = null
-      const id = this.formSearch.area
-      searchArea_device({ id }).then((data) => {
-        if (data && data.data) {
-          var json = data.data.data.list
-          for (let i = 0; i < json.length; i++) {
-            const param = {
-              devId: json[i].dev_id,
-              value: json[i].dev_name
-            }
-            this.DevIdOption.push(param)
-          }
-        }
-      })
     }
   }
-}
 </script>

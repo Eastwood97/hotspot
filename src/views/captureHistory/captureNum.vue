@@ -22,47 +22,37 @@
     <!--高级搜索框-->
     <div
       v-show="advanceSearchViewVisible"
-      style="margin-bottom: 10px;border: 1px;border-radius: 5px;border-style: solid;padding: 10px 0px 10px 0px;box-sizing:border-box;border-color: #EBEEF5;text-align: center;"
+      style="margin-bottom: 10px;border: 1px;border-radius: 5px;border-style: solid;padding: 10px 0px 10px 0px;box-sizing:border-box;border-color: #EBEEF5;"
     >
       <el-row>
-
         设备号:
         <el-input
           v-model="listQuery.devId"
-          style="width: 70px"
+          style="width: 90px"
           size="mini"
           placeholder="设备号"
         />
-
         IMSI:
         <el-input
           v-model="listQuery.imsi"
-          style="width: 120px"
+          style="width: 150px"
           size="mini"
           placeholder="请输入IMSI"
         />
         IMEI:
         <el-input
           v-model="listQuery.imei"
-          style="width: 120px"
+          style="width: 150px"
           size="mini"
           placeholder="请输入IMEI"
         />
-        <!--        <el-col :span="4">-->
-        <!--          电话号码:-->
-        <!--          <el-input-->
-        <!--            v-model="listQuery.isdn"-->
-        <!--            style="width: 110px"-->
-        <!--            size="mini"-->
-        <!--            placeholder="请输入电话"-->
-        <!--          />-->
-        <!--        </el-col>-->
         抓拍时间:
         <el-date-picker
           v-model="captureTime"
           :picker-options="pickerOptions"
           value-format="yyyy-MM-dd HH:mm:ss"
           size="mini"
+          style="width: 350px"
           type="datetimerange"
           range-separator="至"
           start-placeholder="开始日期"
