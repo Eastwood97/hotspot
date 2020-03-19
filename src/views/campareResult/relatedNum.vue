@@ -169,6 +169,11 @@ export default {
         .then(response => {
           this.list = response.data.data.list;
           console.log(response.data.data.list);
+           this.list.forEach(element => {
+           element.relatedResult.topOne.ratio= toPercent(element.relatedResult.topOne.ratio);
+           element.relatedResult.topTwo.ratio= toPercent(element.relatedResult.topTwo.ratio);
+           element.relatedResult.topThree.ratio= toPercent(element.relatedResult.topThree.ratio);
+          });
           this.total = response.data.data.total;
           this.listLoading = false;
         })
@@ -178,6 +183,17 @@ export default {
           this.listLoading = false;
         });
     },
+
+    //小数转换百分比
+    toPercent(point){
+            if (point==0) {
+                return 0;
+            }
+            var str=Number(point*100).toFixed(2);
+            str+="%";
+            return str;
+        },
+
 
     handleSizeChange(val) {
       this.listQuery.limit = val;
