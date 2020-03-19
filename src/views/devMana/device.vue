@@ -174,12 +174,12 @@
 
         <el-form-item label="区域">
           <template>
-            <el-select v-model="dataForm.region" filterable placeholder="请选择">
+            <el-select v-model="dataForm.regionId" filterable placeholder="请选择">
               <el-option
                 v-for="item in options"
                 :key="item.id"
                 :label="item.regionName"
-                :value="item.regionName"
+                :value="item.id"
               ></el-option>
             </el-select>
           </template>
@@ -438,6 +438,9 @@ export default {
     },
     handleUpdate(row) {
       this.dataForm = Object.assign({}, row);
+      this.dataForm.regionId=row.regionId;
+      this.dataForm.isRegister=row.isRegister;
+      this.dataForm.devType=String(row.devType);
       this.dialogStatus = "update";
       this.dialogFormVisible = true;
       this.$nextTick(() => {

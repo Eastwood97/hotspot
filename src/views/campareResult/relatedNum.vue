@@ -60,7 +60,7 @@
       >
         <template slot-scope="scope">
           <p v-if="scope.row.relatedResult.topOne">{{ scope.row.relatedResult.topOne.imsi }}</p>
-          <p v-if="scope.row.relatedResult.topOne">{{ scope.row.relatedResult.topOne.ratio }}</p>
+          <p v-if="scope.row.relatedResult.topOne">{{ scope.row.relatedResult.topOne.ratio| toPercent}}</p>
         </template>
       </el-table-column>
       <el-table-column
@@ -70,7 +70,7 @@
       >
         <template slot-scope="scope">
           <p v-if="scope.row.relatedResult.topTwo">{{ scope.row.relatedResult.topTwo.imsi }}</p>
-           <p v-if="scope.row.relatedResult.topTwo">{{ scope.row.relatedResult.topTwo.ratio }}</p>
+          <p v-if="scope.row.relatedResult.topTwo">{{ scope.row.relatedResult.topTwo.ratio | toPercent }}</p>
         </template>
       </el-table-column>
       <el-table-column
@@ -80,7 +80,7 @@
       >
         <template slot-scope="scope">
           <p v-if="scope.row.relatedResult.topThree">{{ scope.row.relatedResult.topThree.imsi }}</p>
-           <p v-if="scope.row.relatedResult.topThree">{{ scope.row.relatedResult.topThree.ratio }}</p>
+          <p v-if="scope.row.relatedResult.topThree">{{ scope.row.relatedResult.topThree.ratio|toPercent }}</p>
         </template>
       </el-table-column>
 
@@ -91,7 +91,7 @@
       </el-table-column>
     </el-table>
 
-      <!-- 批量删除-->
+    <!-- 批量删除-->
 
     <div style="display: flex;justify-content: space-between;margin: 2px">
       <el-button
@@ -124,7 +124,7 @@ img {
 </style>
 
 <script>
-import { listResult, deleteResult} from "@/api/relatedNum";
+import { listResult, deleteResult } from "@/api/relatedNum";
 import { getToken } from "@/utils/auth";
 // import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 
@@ -162,6 +162,18 @@ export default {
   created() {
     this.getList();
   },
+  //定义私用局部过滤器。只能在当前 vue 对象中使用,小数转换百分比
+  filters: {
+    toPercent(point) {
+      if (point == 0) {
+        return 0;
+      }
+      var str = Number(point * 100).toFixed(2);
+      str += "%";
+      return str;
+    }
+  },
+
   methods: {
     getList() {
       this.listLoading = true;
@@ -169,11 +181,6 @@ export default {
         .then(response => {
           this.list = response.data.data.list;
           console.log(response.data.data.list);
-           this.list.forEach(element => {
-           element.relatedResult.topOne.ratio= toPercent(element.relatedResult.topOne.ratio);
-           element.relatedResult.topTwo.ratio= toPercent(element.relatedResult.topTwo.ratio);
-           element.relatedResult.topThree.ratio= toPercent(element.relatedResult.topThree.ratio);
-          });
           this.total = response.data.data.total;
           this.listLoading = false;
         })
@@ -183,17 +190,6 @@ export default {
           this.listLoading = false;
         });
     },
-
-    //小数转换百分比
-    toPercent(point){
-            if (point==0) {
-                return 0;
-            }
-            var str=Number(point*100).toFixed(2);
-            str+="%";
-            return str;
-        },
-
 
     handleSizeChange(val) {
       this.listQuery.limit = val;
@@ -279,58 +275,58 @@ export default {
       return (this.listQuery.page - 1) * this.listQuery.limit + index + 1;
     },
 
-     // 监听选项变化
+    // 监听选项变化
     handleSelectionChange(val) {
-      this.multipleSelection = val
+      this.multipleSelection = val;
     },
 
     // 执行删除
     doDelete(ids) {
-      this.tableLoading = true
-      var _this = this
+      this.tableLoading = true;
+      var _this = this;
       deleteResult(ids).then(resp => {
-        _this.tableLoading = false
+        _this.tableLoading = false;
         if (resp && resp.status === 200) {
           _this.$message({
-            message: '删除成功',
-            type: 'success'
-          })
-          _this.getList()
+            message: "删除成功",
+            type: "success"
+          });
+          _this.getList();
         }
-      })
+      });
     },
     // 批量删除
     deleteManyNumbers() {
       this.$confirm(
-        '此操作将删除[' + this.multipleSelection.length + ']条数据, 是否继续?',
-        '提示',
+        "此操作将删除[" + this.multipleSelection.length + "]条数据, 是否继续?",
+        "提示",
         {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
         }
       )
         .then(() => {
-          var ids = ''
+          var ids = "";
           for (var i = 0; i < this.multipleSelection.length; i++) {
-            ids += this.multipleSelection[i].id + ','
+            ids += this.multipleSelection[i].id + ",";
           }
-          this.doDelete(ids)
+          this.doDelete(ids);
         })
-        .catch(() => {})
+        .catch(() => {});
     },
     // 单个删除
     deleteNumber(row) {
-      this.$confirm('此操作将永久删除[' + row.id + '], 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
+      this.$confirm("此操作将永久删除[" + row.id + "], 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
       })
         .then(() => {
-          this.doDelete(row.id)
+          this.doDelete(row.id);
         })
-        .catch(() => {})
-    },
+        .catch(() => {});
+    }
   }
 };
 </script>
