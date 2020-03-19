@@ -367,7 +367,7 @@ export const asyncRouterMap = [
       {
         path: 'logResult',
         component: () => import('@/views/log/logResult'),
-        name: 'admin',
+        name: 'logResult',
         meta: {
           perms: ['GET /admin/admin/list', 'POST /admin/admin/create', 'POST /admin/admin/update', 'POST /admin/admin/delete'],
           title: '日志管理',
